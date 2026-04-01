@@ -1,0 +1,57 @@
+<template id="login-template">
+    <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 via-purple-600 to-pink-500">
+        <div class="w-full max-w-md p-8 bg-white rounded-lg shadow-2xl">
+            <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Iniciar sesión</h1>
+
+            <app-form id="loginForm">
+                <!-- Email Input -->
+                <div slot="fields" class="mb-6">
+                    <input-component 
+                        id="emailInput"
+                        type="email" 
+                        placeholder="correo@example.com"
+                        required
+                        name="email"
+                        label="Email"
+                        class="w-full"
+                    ></input-component>
+                </div>
+
+                <!-- Password Input -->
+                <div slot="fields" class="mb-6">
+                    <input-component 
+                        id="passwordInput"
+                        type="password" 
+                        placeholder="Tu contraseña"
+                        required
+                        name="password"
+                        label="Contraseña"
+                        class="w-full"
+                    ></input-component>
+                </div>
+
+                <!-- Submit Button -->
+                <div slot="fields">
+                    <app-button 
+                        id="submitBtn"
+                        variant="primary" 
+                        size="md"
+                        text="Entrar"
+                        class="w-full"
+                    ></app-button>
+                </div>
+            </app-form>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="hidden mt-4 p-4 bg-green-50 border-l-4 border-green-500 rounded text-green-700 font-medium">
+                ✓ Inicio de sesión exitoso
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="hidden mt-4 p-4 bg-red-50 border-l-4 border-red-500 rounded text-red-700 font-medium">
+                ✗ Error: <span id="errorText"></span>
+            </div>
+        </div>
+    </div>
+</template>
+
