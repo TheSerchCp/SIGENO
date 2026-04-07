@@ -1,0 +1,37 @@
+<template id="modal-template">
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/70  flex items-center justify-center transition-opacity duration-300 hidden" style="z-index: 9998;">
+        <div id="modal-content" class="bg-white dark:bg-gray-900 rounded-lg shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0">
+            <!-- Header -->
+            <div class="flex items-start gap-4 p-2 dark:border-gray-700">
+                <div id="modal-icon" class="text-xl flex-shrink-0">
+                    <!-- Icono dinámico -->
+                </div>
+                <div class="flex-1">
+                    <h2 id="modal-title" class="text-lg font-bold text-gray-900 dark:text-white">
+                        <!-- Título dinámico -->
+                    </h2>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6">
+                <p id="modal-message" class="text-gray-600 dark:text-gray-400 mb-4">
+                    <!-- Mensaje dinámico -->
+                </p>
+                <div id="modal-custom-content" class="mb-4">
+                    <!-- Contenido personalizado via slot -->
+                </div>
+            </div>
+
+            <!-- Footer con Botones -->
+            <div class="flex gap-3 p-2 border-t border-gray-200 dark:border-gray-700 justify-end">
+                <button id="modal-cancel-btn" class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+                    Cancelar
+                </button>
+                <button id="modal-confirm-btn" class="px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-600 text-white transition-colors font-medium">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</template>

@@ -35,6 +35,8 @@
  * 
  * form.reset(); // resetea todos los controles
  */
+import { ReactivoBehavior } from '/src/services/general/ReactiveBehavior.js';
+
 export class FormGroup extends ReactivoBehavior {
     /**
      * Objeto que almacena todos los controles del formulario

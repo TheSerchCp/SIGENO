@@ -1,4 +1,4 @@
-import { ReactiveBehavior } from '/src/services/general/ReactiveBehavior.js';
+import { ReactivoBehavior } from '/src/services/general/ReactiveBehavior.js';
 
 /**
  * FORM CONTROL - Gestor reactivo de control de formulario con validación
@@ -45,7 +45,7 @@ import { ReactiveBehavior } from '/src/services/general/ReactiveBehavior.js';
  * console.log(control.isValid()); // true
  * console.log(control.getError('invalidEmail')); // undefined
  */
-export class FormControl extends ReactiveBehavior {
+export class FormControl extends ReactivoBehavior {
     /**
      * Array de funciones validadoras
      * 
@@ -272,6 +272,39 @@ export class FormControl extends ReactiveBehavior {
      */
     getError(errorKey) {
         return this.#errors[errorKey];
+    }
+
+    /**
+     * Obtiene todos los errores
+     * @returns {Object}
+     */
+    getErrors() {
+        return this.#errors;
+    }
+
+    /**
+     * Verifica si el control tiene errores
+     * @returns {boolean}
+     */
+    hasErrors() {
+        return !this.isValid();
+    }
+
+    /**
+     * Marca el control como tocado
+     */
+    markAsTouched() {
+        const current = this.getValue();
+        current.touched = true;
+        this.next(current);
+    }
+
+    /**
+     * Obtiene el estado de touched
+     * @returns {boolean}
+     */
+    isTouched() {
+        return this.getValue().touched;
     }
 }
  

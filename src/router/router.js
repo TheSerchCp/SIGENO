@@ -8,6 +8,7 @@
  * - Manejo del historial del navegador (back/forward)
  * - Comunicación entre rutas y componentes
  * - Soporte para rutas dinámicas con parámetros (:id, :userId, etc.)
+ * - Protección de rutas según autenticación
  * 
  * Arquitectura:
  * root-layout (contenedor principal)
@@ -18,6 +19,8 @@
  */
 
 import { routesConfig } from './config.js';
+import { loginService } from '../services/api/login.service.js';
+import { toastService } from '../services/general/toast.service.js';
 
 export class Router {
   /**
@@ -126,6 +129,7 @@ export class Router {
   /**
    * Carga y renderiza la ruta actual
    * Soporta rutas dinámicas con parámetros
+   * Incluye protección de rutas según autenticación
    * 
    * Esta es la función principal del router
    * Se llama cuando:
@@ -158,6 +162,13 @@ export class Router {
     // Obtener la ruta actual desde window.location.pathname
     // Ejemplo: si la URL es http://localhost:3000/users/123, path = "/users/123"
     const path = window.location.pathname;
+    
+    // PROTECCIÓN: Si intenta acceder a /login o / estando autenticado, redirigir a /home
+    if ((path === '/login' || path === '/') && loginService.isLoggedIn()) {
+      toastService.info(`Sesión iniciada como ${loginService.getCurrentUser().name}`);
+      history.pushState({}, '', '/home');
+      return this.loadRoute();
+    }
     
     // Encontrar la ruta que coincida (soporta dinámicas)
     const { route, params } = this.findRoute(path);

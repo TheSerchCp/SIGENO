@@ -10,6 +10,7 @@
  */
 import { BaseComponent } from '/src/services/general/BaseComponent.js';
 import { sidebarService } from '/src/services/general/sidebar.service.js';
+import { modalService } from '/src/services/general/modal.service.js';
 
 class AppSidebar extends BaseComponent {
   /**
@@ -106,10 +107,16 @@ class AppSidebar extends BaseComponent {
   }
 
   handleLogout() {
-    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-      localStorage.clear();
-      window.location.href = '/login';
-    }
+    modalService.show({
+      title: 'Cerrar sesión',
+      message: '¿Estás seguro de que deseas cerrar sesión?',
+      icon: '👋',
+      confirmText: 'Cerrar sesión',
+      onConfirm: () => {
+        localStorage.clear();
+        window.location.href = '/login';
+      }
+    });
   }
 }
 
