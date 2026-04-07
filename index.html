@@ -10,12 +10,7 @@
             import { themeService } from '/src/services/general/theme.service.js';
             // El tema se aplica automáticamente en el constructor del servicio
             // Esto asegura que el tema correcto se aplique antes de que se renderice el contenido
-              const theme = localStorage.theme ||
-        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-        }
          </script>
          <script type="module" src="/src/layout/root-layout/root-layout.js"></script>
     </head>

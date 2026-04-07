@@ -19,6 +19,11 @@ class ThemeService {
     const initialTheme = this.getInitialTheme();
     this.currentTheme = new ReactivoBehavior(initialTheme);
 
+    // Si no hay tema guardado en localStorage, guardarlo ahora
+    if (typeof localStorage !== 'undefined' && !localStorage.theme) {
+      localStorage.theme = initialTheme;
+    }
+
     // Aplicar inmediatamente
     this.applyTheme(initialTheme);
   }
@@ -36,11 +41,9 @@ class ThemeService {
     if (localStorage.theme === 'dark') return 'dark';
     if (localStorage.theme === 'light') return 'light';
 
+    // Si no hay preferencia guardada, detectar del sistema
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = prefersDark ? 'dark' : 'light';
-    // Guardar la preferencia del sistema en localStorage
-    localStorage.theme = theme;
-    return theme;
+    return prefersDark ? 'dark' : 'light';
   }
 
   /**
