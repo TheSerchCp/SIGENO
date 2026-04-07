@@ -37,7 +37,10 @@ class ThemeService {
     if (localStorage.theme === 'light') return 'light';
 
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return prefersDark ? 'dark' : 'light';
+    const theme = prefersDark ? 'dark' : 'light';
+    // Guardar la preferencia del sistema en localStorage
+    localStorage.theme = theme;
+    return theme;
   }
 
   /**
