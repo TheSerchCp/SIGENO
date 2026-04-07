@@ -1,6 +1,42 @@
 <template id="home-template">
-  <div class="flex flex-col gap-6">
-    <h1 class="text-3xl font-bold">Bienvenido a Home</h1>
-    <p class="text-gray-700">Este es el contenido de la página home</p>
+  <div class="space-y-8">
+    <!-- Header Section -->
+    <div class="border-l-4 border-blue-500 pl-6">
+      <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">Bienvenido</h1>
+      <p class="text-gray-600 dark:text-gray-400 mt-2">Sistema de gestión eficiente y elegante</p>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Card 1 - Blue -->
+      <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-6 rounded-lg hover:border-blue-300 dark:hover:border-blue-600 transition-colors">
+        <div class="text-2xl mb-2">📊</div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Estadísticas</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Visualiza tus datos en tiempo real</p>
+      </div>
+
+      <!-- Card 2 - Red -->
+      <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-6 rounded-lg hover:border-red-300 dark:hover:border-red-600 transition-colors">
+        <div class="text-2xl mb-2">🎯</div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Objetivos</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Alcanza tus metas con facilidad</p>
+      </div>
+
+      <!-- Card 3 - Green -->
+      <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-6 rounded-lg hover:border-green-300 dark:hover:border-green-600 transition-colors">
+        <div class="text-2xl mb-2">✅</div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Logros</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-sm">Celebra tu progreso diario</p>
+      </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-8 rounded-lg">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Contenido Principal</h2>
+      <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+        Este es el contenido de la página home. El diseño utiliza una paleta minimalista con toques de color 
+        en azul, rojo y verde para destacar elementos importantes.
+      </p>
+    </div>
   </div>
 </template>

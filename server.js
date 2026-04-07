@@ -184,9 +184,11 @@ http.createServer((req, res) => {
 
     // CASO 3: El archivo tiene extensión pero no existe
     // Devolver error 404
+    console.warn(`[404] No encontrado: ${url} (resuelto a: ${filePath})`);
     res.writeHead(404);
     res.end('Not Found');
   });
 }).listen(PORT, () => {
   console.log(`Servidor en http://localhost:${PORT}`);
+  console.log(`Directorio raíz: ${__dirname}`);
 });

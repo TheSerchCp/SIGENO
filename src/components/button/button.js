@@ -110,12 +110,12 @@ export class ButtonComponent extends BaseComponent {
 
   getVariantClasses(variant) {
     const variants = {
-      'primary': 'bg-blue-600 hover:bg-blue-700 text-white',
-      'secondary': 'bg-gray-600 hover:bg-gray-700 text-white',
-      'danger': 'bg-red-600 hover:bg-red-700 text-white',
-      'success': 'bg-green-600 hover:bg-green-700 text-white',
-      'outline': 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
-      'ghost': 'text-gray-600 hover:bg-gray-100'
+      'primary': 'bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white dark:bg-blue-700 dark:hover:bg-blue-600',
+      'secondary': 'bg-gray-600 hover:bg-gray-700 text-white hover:cursor-pointer dark:bg-gray-700 dark:hover:bg-gray-600',
+      'danger': 'bg-red-600 hover:bg-red-700 text-white hover:cursor-pointer dark:bg-red-700 dark:hover:bg-red-600',
+      'success': 'bg-green-600 hover:bg-green-700 text-white hover:cursor-pointer dark:bg-green-700 dark:hover:bg-green-600',
+      'outline': 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 hover:cursor-pointer dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-900/20',
+      'ghost': 'text-gray-600 hover:bg-gray-100 hover:cursor-pointer dark:text-gray-400 dark:hover:bg-gray-800'
     };
     return variants[variant] || variants['primary'];
   }

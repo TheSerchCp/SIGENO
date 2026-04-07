@@ -3,12 +3,13 @@
  * Componente reutilizable que carga el contenido de la barra lateral
  * 
  * Responsabilidades:
- * - Mostrar menú de navegación principal
- * - Proporcionar acceso a secciones de la aplicación
- * - Permitir colapso/expansión (opcional)
- * - Mostrar estado actual de navegación
+ * - Mostrar menú de navegación dinámico desde el servicio
+ * - Mostrar información del usuario
+ * - Proporcionar botón para cerrar sesión
+ * - Suscribirse a cambios en las opciones del sidebar
  */
 import { BaseComponent } from '/src/services/general/BaseComponent.js';
+import { sidebarService } from '/src/services/general/sidebar.service.js';
 
 class AppSidebar extends BaseComponent {
   /**
@@ -17,12 +18,98 @@ class AppSidebar extends BaseComponent {
    * Proceso:
    * 1. Realiza fetch al archivo sidebar.html
    * 2. Clona la template en el DOM
-   * 3. El menú se carga y está disponible para interacción
+   * 3. Se suscribe a cambios en las opciones del sidebar
+   * 4. El menú se carga y está disponible para interacción
    */
   async connectedCallback() {
      await this.loadTemplate(
       '/src/layout/app-layout/sidebar/sidebar.html', 
       '#sidebar-template');
+      
+      this.cacheDom();
+      this.setupEventListeners();
+      this.subscribeToSidebarOptions();
+   }
+
+  cacheDom() {
+    this.$logoutBtn = this.querySelector('#logout-btn');
+    this.$userEmail = this.querySelector('#user-email');
+    this.$navOptions = this.querySelector('#nav-options');
+  }
+
+  setupEventListeners() {
+    if (this.$logoutBtn) {
+      this.$logoutBtn.addEventListener('click', () => this.handleLogout());
+    }
+    
+    this.displayUserInfo();
+  }
+
+  /**
+   * Se suscribe al servicio de sidebar para reaccionar a cambios
+   * Cada vez que las opciones cambien, se re-renderiza el menú
+   */
+  subscribeToSidebarOptions() {
+    sidebarService.options.subscribe(options => {
+      this.renderNavOptions(options);
+    });
+
+    // Renderizar opciones iniciales (si las hay)
+    const initialOptions = sidebarService.getOptions();
+    if (initialOptions.length > 0) {
+      this.renderNavOptions(initialOptions);
+    }
+  }
+
+  /**
+   * Renderiza las opciones de navegación dinámicamente
+   * Crea elementos <button> para cada opción con evento click para navegar
+   * 
+   * @param {Array} options - Array de opciones con { label, route, icon? }
+   */
+  renderNavOptions(options) {
+    if (!this.$navOptions) return;
+
+    // Limpiar opciones previas
+    this.$navOptions.innerHTML = '';
+
+    // Renderizar cada opción
+    options.forEach((option, index) => {
+      const button = document.createElement('button');
+      button.className = 'px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-sm text-left flex items-center gap-2';
+      
+      // Agregar contenido: icono (si existe) + label
+      const content = option.icon 
+        ? `<span class="text-lg">${option.icon}</span><span>${option.label}</span>`
+        : option.label;
+      
+      button.innerHTML = content;
+
+      // Navegar usando el router cuando se hace click
+      button.addEventListener('click', () => {
+        if (window.appRouter) {
+          window.appRouter.navigate(option.route);
+        } else {
+          console.error('Router no disponible');
+        }
+      });
+
+      this.$navOptions.appendChild(button);
+    });
+  }
+
+  displayUserInfo() {
+    const userEmail = localStorage.getItem('userEmail') || 'usuario@email.com';
+    if (this.$userEmail) {
+      this.$userEmail.textContent = userEmail;
+    }
+  }
+
+  handleLogout() {
+    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+      localStorage.clear();
+      window.location.href = '/login';
+    }
   }
 }
 
@@ -31,146 +118,3 @@ class AppSidebar extends BaseComponent {
  * Permite usar <app-sidebar></app-sidebar> en el HTML
  */
 customElements.define('app-sidebar', AppSidebar);
-
-
-/*
-COMO AÑADIR ITEMS DINAMICOS SEGUN EL ROL, RECOMENDACION:
-
-  Arquitectura recomendada:
-
-  1. Servicio de Roles/Menú:
-
-   // src/services/AuthService.js
-   export class AuthService {
-     static getInstance() {
-       if (!this.instance) {
-         this.instance = new AuthService();
-       }
-       return this.instance;
-     }
-
-     // Menú base según cada rol
-     #menusByRole = {
-       admin: [
-         { label: 'Dashboard', href: '/', icon: 'home' },
-         { label: 'Usuarios', href: '/users', icon: 'users' },
-         { label: 'Reportes', href: '/reports', icon: 'chart' },
-         { label: 'Configuración', href: '/config', icon: 'settings' }
-       ],
-       user: [
-         { label: 'Dashboard', href: '/', icon: 'home' },
-         { label: 'Mi Perfil', href: '/profile', icon: 'user' },
-         { label: 'Mis Datos', href: '/mydata', icon: 'file' }
-       ],
-       guest: [
-         { label: 'Home', href: '/', icon: 'home' },
-         { label: 'Acerca de', href: '/about', icon: 'info' }
-       ]
-     };
-
-     // Obtener rol actual
-     getCurrentRole() {
-       return localStorage.getItem('userRole') || 'guest';
-     }
-
-     // Obtener menú según rol
-     getMenuByRole() {
-       const role = this.getCurrentRole();
-       return this.#menusByRole[role] || this.#menusByRole['guest'];
-     }
-
-     // Cambiar rol (cuando el usuario login)
-     setRole(role) {
-       localStorage.setItem('userRole', role);
-     }
-   }
-
-  2. Componente Sidebar mejorado:
-
-   // src/layout/app-layout/sidebar/sidebar.js
-   import { TemplateLoader } from "../../../services/general/TemplateLoader";
-
-   class AppSidebar extends HTMLElement {
-
-     #menuItems = [];
-
-     async connectedCallback() {
-       const templateLoader = TemplateLoader.getInstance();
-       const template = await templateLoader.load(
-         '/components/layout/sidebar/sidebar.html',
-         '#sidebar-template');
-       this.appendChild(template);
-
-       this.cacheDom();
-       this.render();
-     }
-
-     cacheDom() {
-       this.$nav = this.querySelector('[data-nav]');
-     }
-
-     set menuItems(items) {
-       this.#menuItems = items;
-       this.render();
-     }
-
-     get menuItems() {
-       return this.#menuItems;
-     }
-
-     render() {
-       if (!this.$nav) return;
-
-       this.$nav.innerHTML = '';
-
-       this.#menuItems.forEach(item => {
-         const link = document.createElement('a');
-         link.href = item.href;
-         link.textContent = item.label;
-         link.className = item.className || 'nav-link';
-         this.$nav.appendChild(link);
-       });
-     }
-   }
-
-   customElements.define('app-sidebar', AppSidebar);
-
-  3. Usar en el componente padre (AppLayout o Root):
-
-   // src/layout/app-layout/app-layout.js
-   import { AuthService } from "../../services/AuthService";
-
-   class AppLayout extends HTMLElement {
-
-     async connectedCallback() {
-       // ... cargar template ...
-
-       this.cacheDom();
-       this.setupSidebar();
-       this.handleRoleChanges();
-     }
-
-     cacheDom() {
-       this.$sidebar = this.querySelector('app-sidebar');
-     }
-
-     setupSidebar() {
-       const authService = AuthService.getInstance();
-       const menuItems = authService.getMenuByRole();
-       this.$sidebar.menuItems = menuItems;
-     }
-
-     // Escuchar cambios de rol (ejemplo con storage event)
-     handleRoleChanges() {
-       window.addEventListener('storage', (e) => {
-         if (e.key === 'userRole') {
-           this.setupSidebar();
-         }
-       });
-     }
-   }
-
-   customElements.define('app-layout', AppLayout);
-
-
-*/

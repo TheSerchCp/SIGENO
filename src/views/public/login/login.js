@@ -70,6 +70,7 @@ class LoginComponent extends BaseComponent {
         
         console.log('📍 Mostrando loader...');
         loadingService.show();
+        loadingService.setLoadingText('Iniciando sesión...');
 
         try {
             const formData = {

@@ -6,13 +6,21 @@
  * - Mostrar/ocultar loader al navegar entre rutas
  * - Mostrar/ocultar loader durante llamadas a API
  * - Soportar múltiples operaciones simultáneas
+ * - Personalizar el texto del loader
  * 
  * Uso:
  * import { loadingService } from './loading.service.js';
  * 
- * loadingService.show();     // Muestra el loader
+ * // Mostrar/ocultar
+ * loadingService.show();     // Muestra el loader con texto "Cargando..."
  * loadingService.hide();     // Oculta el loader
- * loadingService.isLoading.subscribe(isLoading => {...});  // Escuchar cambios
+ * 
+ * // Personalizar texto
+ * loadingService.setLoadingText('Guardando cambios...');
+ * loadingService.resetLoadingText();  // Vuelve a "Cargando..."
+ * 
+ * // Suscribirse a cambios
+ * loadingService.isLoading.subscribe(isLoading => {...});
  */
 
 import { ReactivoBehavior } from './ReactiveBehavior.js';
@@ -21,6 +29,9 @@ class LoadingService {
   constructor() {
     // ReactivoBehavior que controla si el loader está visible
     this.isLoading = new ReactivoBehavior(false);
+    
+    // ReactivoBehavior que controla el texto del loader
+    this.loadingText = new ReactivoBehavior('Cargando...');
     
     // Contador de operaciones en curso
     // Permite múltiples operaciones simultáneas
@@ -94,6 +105,33 @@ class LoadingService {
    */
   getIsLoading() {
     return this.isLoading.getValue();
+  }
+
+  /**
+   * Establece el texto del loader
+   * 
+   * Uso:
+   * loadingService.setLoadingText('Guardando cambios...');
+   * 
+   * @param {string} text - Texto a mostrar en el loader
+   */
+  setLoadingText(text) {
+    this.loadingText.next(text);
+  }
+
+  /**
+   * Obtiene el texto actual del loader
+   * @returns {string}
+   */
+  getLoadingText() {
+    return this.loadingText.getValue();
+  }
+
+  /**
+   * Reinicia el texto del loader al texto por defecto
+   */
+  resetLoadingText() {
+    this.loadingText.next('Cargando...');
   }
 }
 

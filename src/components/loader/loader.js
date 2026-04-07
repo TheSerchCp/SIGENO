@@ -11,6 +11,8 @@ import { loadingService } from '../../services/general/loading.service.js';
  * 1. Agregar al layout: <app-loader></app-loader>
  * 2. Mostrar: loadingService.show()
  * 3. Ocultar: loadingService.hide()
+ * 4. Cambiar texto: loadingService.setLoadingText('Tu texto aquí')
+ * 5. Restaurar texto: loadingService.resetLoadingText()
  */
 
 export class LoaderComponent extends BaseComponent {
@@ -45,6 +47,12 @@ export class LoaderComponent extends BaseComponent {
       } else {
         this.hide();
       }
+    });
+
+    // Suscribirse a cambios del texto
+    loadingService.loadingText.subscribe(text => {
+      console.log('Loader text changed:', text);
+      this.setText(text);
     });
   }
 

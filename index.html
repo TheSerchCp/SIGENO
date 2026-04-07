@@ -1,11 +1,25 @@
-<html>
+<html class="scroll-smooth dark">
     <head>
          <meta charset="UTF-8" />
-         <meta  name="viewport" content="width=device-width, initial-scale=1.0" />
-         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+         <link rel="stylesheet" href="/assets/css/tailwind.css" />
+         <link rel="stylesheet" href="/src/theme.css" />
+         <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
+         <script type="module">
+            // Importar y aplicar el servicio de tema ANTES de que se cargue cualquier componente
+            import { themeService } from '/src/services/general/theme.service.js';
+            // El tema se aplica automáticamente en el constructor del servicio
+            // Esto asegura que el tema correcto se aplique antes de que se renderice el contenido
+              const theme = localStorage.theme ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+         </script>
          <script type="module" src="/src/layout/root-layout/root-layout.js"></script>
     </head>
-    <body class="bg-neutral-300 dark:bg-neutral-950">
+    <body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
         <root-layout></root-layout>
     </body>
 </html>

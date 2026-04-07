@@ -151,7 +151,7 @@ export class InputComponent extends BaseComponent {
     if (!this.elements?.input) return;
 
     const customClasses = this.customClasses$.getValue();
-    const baseClasses = 'w-full px-3 py-2 border border-gray-300 rounded';
+    const baseClasses = 'w-full px-3 py-2 border border-gray-300 rounded focus:outline-hidden focus:border-2 focus:border-blue-500 placeholder:text-gray-300 text-gray-500';
     this.elements.input.className = `${baseClasses} ${customClasses}`.trim();
   }
 
