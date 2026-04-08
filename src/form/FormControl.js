@@ -115,6 +115,7 @@ export class FormControl extends ReactivoBehavior {
     constructor(value = '', validators = []) {
         super({ value, errors: {}, dirty: false, touched: false });
         this.#validators = validators;
+        // NO validar aquí - solo cuando el usuario cambia el valor
     }
 
     /**
@@ -201,7 +202,7 @@ export class FormControl extends ReactivoBehavior {
     validate() {
         this.#errors = {};
         const value = this.getValue().value;
-
+        console.log("Validadores del control:", this.#validators);
         for (const validator of this.#validators) {
             const error = validator(value);
             if (error) {
@@ -209,7 +210,10 @@ export class FormControl extends ReactivoBehavior {
             }
         }
 
-        this.getValue().errors = this.#errors;
+        const current = this.getValue();
+        current.errors = this.#errors;
+        // Forzar notificación aunque sea el mismo objeto
+        this.next(current);
         return Object.keys(this.#errors).length === 0;
     }
 
@@ -238,6 +242,20 @@ export class FormControl extends ReactivoBehavior {
      * - Renderizar mensaje de éxito/error
      */
     isValid() {
+        return Object.keys(this.#errors).length === 0;
+    }
+    validateSilent() {
+        this.#errors = {};
+        const value = this.getValue().value;
+
+        for (const validator of this.#validators) {
+            const error = validator(value);
+            if (error) {
+                Object.assign(this.#errors, error);
+            }
+        }
+
+        this.getValue().errors = this.#errors;
         return Object.keys(this.#errors).length === 0;
     }
 

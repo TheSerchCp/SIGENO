@@ -157,10 +157,9 @@ export class ReactivoBehavior {
      * 3. forEach() ejecuta cada callback con el nuevo valor
      */
     next(newValue) {
-        if (this.#value !== newValue) {
-            this.#value = newValue;
-            this.#subscribers.forEach(callback => callback(newValue));
-        }
+        // Siempre actualizar y notificar (necesario para cambios en propiedades de objetos)
+        this.#value = newValue;
+        this.#subscribers.forEach(callback => callback(newValue));
     }
 
     /**

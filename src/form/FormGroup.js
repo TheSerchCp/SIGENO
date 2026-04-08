@@ -77,6 +77,14 @@ export class FormGroup extends ReactivoBehavior {
     constructor(controls = {}) {
         super(controls);
         this.#controls = controls;
+        
+        // Suscribirse a cambios de cada control para propagarlos
+        Object.values(this.#controls).forEach(control => {
+            control.subscribe(() => {
+                // Notificar a los suscriptores del FormGroup cuando cambia un control
+                this.next(this.#controls);
+            });
+        });
     }
 
     /**
@@ -124,7 +132,18 @@ export class FormGroup extends ReactivoBehavior {
      * - Prevenir acciones si hay errores
      */
     isValid() {
-        return Object.values(this.#controls).every(control => control.isValid());
+        // Validar todos los controles sin disparar notificaciones
+        // Esto evita bucles infinitos
+        let allValid = true;
+        Object.values(this.#controls).forEach(control => {
+            // Validar silenciosamente
+            const currentState = control.getValue();
+            control.validateSilent ? control.validateSilent() : control.validate();
+            if (!control.isValid()) {
+                allValid = false;
+            }
+        });
+        return allValid;
     }
 
     /**

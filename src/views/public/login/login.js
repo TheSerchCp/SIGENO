@@ -6,6 +6,7 @@ import { loginService } from "../../../services/api/login.service.js";
 import { FormGroup } from "../../../form/FormGroup.js";
 import { FormControl } from "../../../form/FormControl.js";
 import { Validators } from "../../../form/Validators.js";
+import { FormService } from "../../../services/form/FormService.js";
 import '../sharedComponents.js';
 
 class LoginComponent extends BaseComponent {
@@ -25,7 +26,7 @@ class LoginComponent extends BaseComponent {
     }
 
     /**
-     * Inicializa el FormGroup con los controles del formulario
+     * Inicializa el FormGroup y FormService
      */
     initializeForm() {
         this.loginForm = new FormGroup({
@@ -39,113 +40,45 @@ class LoginComponent extends BaseComponent {
             ])
         });
 
-        // Suscribirse a cambios del formulario
-        this.loginForm.subscribe(() => {
-            this.validateForm();
-            this.updateErrorMessages();
+        // Crear servicio de formulario con configuración de campos y mensajes
+        this.formService = new FormService(this.loginForm, {
+            email: {
+                element: this.emailInput,
+                errors: {
+                    required: 'Email requerido',
+                    email: 'Email inválido'
+                }
+            },
+            password: {
+                element: this.passwordInput,
+                errors: {
+                    required: 'Contraseña requerida',
+                    minLength: 'Mínimo 6 caracteres'
+                }
+            }
         });
 
-        // Validar inicial y mostrar errores
-        this.validateForm();
-        this.updateErrorMessages();
-    }
-
-    /**
-     * Actualiza los mensajes de error en los inputs
-     */
-    updateErrorMessages() {
-        const emailControl = this.loginForm.get('email');
-        const passwordControl = this.loginForm.get('password');
-
-        // ===== EMAIL INPUT =====
-        const emailInputElement = this.emailInput.querySelector('input');
-        
-        // Limpiar errores previos
-        this.emailInput.querySelectorAll('[slot="error"]').forEach(el => el.remove());
-        
-        // Remover borde rojo previo
-        if (emailInputElement) {
-            emailInputElement.classList.remove('border-red-500', 'dark:border-red-500');
-        }
-
-        // Mostrar errores de email
-        if (emailControl.hasErrors() && emailControl.isTouched()) {
-            const errors = emailControl.getErrors();
-            
-            // Agregar borde rojo
-            if (emailInputElement) {
-                emailInputElement.classList.add('border-red-500', 'dark:border-red-500');
-            }
-            
-            Object.keys(errors).forEach(errorType => {
-                const errorDiv = document.createElement('span');
-                errorDiv.slot = 'error';
-                errorDiv.className = 'text-red-500 text-sm';
-                
-                if (errorType === 'required') {
-                  errorDiv.textContent = 'Email requerido';
-                } else if (errorType === 'email') {
-                  errorDiv.textContent = 'Email inválido';
-                }
-                
-                this.emailInput.appendChild(errorDiv);
-            });
-        }
-
-        // ===== PASSWORD INPUT =====
-        const passwordInputElement = this.passwordInput.querySelector('input');
-        
-        // Limpiar errores previos
-        this.passwordInput.querySelectorAll('[slot="error"]').forEach(el => el.remove());
-        
-        // Remover borde rojo previo
-        if (passwordInputElement) {
-            passwordInputElement.classList.remove('border-red-500', 'dark:border-red-500');
-        }
-
-        // Mostrar errores de password
-        if (passwordControl.hasErrors() && passwordControl.isTouched()) {
-            const errors = passwordControl.getErrors();
-            
-            // Agregar borde rojo
-            if (passwordInputElement) {
-                passwordInputElement.classList.add('border-red-500', 'dark:border-red-500');
-            }
-            
-            Object.keys(errors).forEach(errorType => {
-                const errorDiv = document.createElement('span');
-                errorDiv.slot = 'error';
-                errorDiv.className = 'text-red-500 text-sm';
-                
-                if (errorType === 'required') {
-                  errorDiv.textContent = 'Contraseña requerida';
-                } else if (errorType === 'minLength') {
-                  errorDiv.textContent = 'Mínimo 6 caracteres';
-                }
-                
-                this.passwordInput.appendChild(errorDiv);
-            });
-        }
+        // Configurar validación automática
+        this.formService.setupValidation();
+        this.formService.validateAndUpdateUI(this.submitBtn);
     }
 
     setupEventListeners() {
-        // Validar formulario cuando cambian los inputs
+        // Escuchar cambios en los inputs
         this.listen(this.emailInput, 'input-change', (event) => {
-            this.loginForm.get('email').setValue(event.detail.value);
+            this.formService.setFieldValue('email', event.detail.value);
         });
 
         this.listen(this.emailInput, 'input-blur', () => {
-            this.loginForm.get('email').markAsTouched();
-            this.updateErrorMessages();
+            this.formService.markAsTouched('email');
         });
-        
+
         this.listen(this.passwordInput, 'input-change', (event) => {
-            this.loginForm.get('password').setValue(event.detail.value);
+            this.formService.setFieldValue('password', event.detail.value);
         });
 
         this.listen(this.passwordInput, 'input-blur', () => {
-            this.loginForm.get('password').markAsTouched();
-            this.updateErrorMessages();
+            this.formService.markAsTouched('password');
         });
 
         // Manejar click del botón
@@ -153,58 +86,48 @@ class LoginComponent extends BaseComponent {
             this.handleSubmit();
         });
 
-        // Manejar submit del formulario (si se envía por Enter en el input)
+        // Manejar submit del formulario (si se envía por Enter)
         this.listen(this.form, 'submit', (e) => {
             e.preventDefault();
             this.handleSubmit();
         });
     }
 
-    validateForm() {
-        const isFormValid = this.loginForm.isValid();
-        this.submitBtn.setDisabled(!isFormValid);
-        return isFormValid;
-    }
-
     async handleSubmit() {
-        if (!this.validateForm()) {
+        if (!this.formService.isFormValid()) {
+            this.formService.markAllAsTouched();
             return;
         }
 
         this.submitBtn.setLoading(true);
-        
-        console.log('📍 Mostrando loader...');
+
         loadingService.show();
         loadingService.setLoadingText('Iniciando sesión...');
 
         try {
-            const formData = this.loginForm.getValue();
+            const formData = this.formService.getFormValues();
 
             // Usar el servicio de login
             const response = await loginService.login(formData.email, formData.password);
 
             if (response.success) {
-                this.submitBtn.setVariant('success');
-                
                 // Mostrar toast de éxito
                 toastService.success(
                     'Bienvenido',
                     `Sesión iniciada como ${response.user.role}`,
                     3000
                 );
-                
+
                 console.log('✓ Login exitoso:', response);
-                
+
                 // Limpiar formulario
-                this.loginForm.reset();
-                
+                this.formService.resetForm();
+
                 // Mantener loader mientras navega
                 setTimeout(() => {
-                    console.log('🔄 Navegando a /home...');
                     this.router.navigate('/home');
                     // El loader se ocultará cuando el router termine de cargar
                     setTimeout(() => {
-                        console.log('📍 Ocultando loader...');
                         loadingService.hide();
                     }, 500);
                 }, 1000);
@@ -213,18 +136,15 @@ class LoginComponent extends BaseComponent {
             }
         } catch (error) {
             this.submitBtn.setVariant('danger');
-            
+
             // Mostrar toast de error
             toastService.error(
                 'Error en el inicio de sesión',
                 error.message || 'Verifique sus credenciales',
                 5000
             );
-            
+
             loadingService.hide();
-            
-            console.log('❌ Error:', error.message);
-            
             // Volver al estado normal después de 2 segundos
             setTimeout(() => {
                 this.submitBtn.setVariant('primary');

@@ -83,26 +83,31 @@ export class Router {
    * @returns {Object|null} - Parámetros extraídos o null si no coincide
    */
   matchPattern(pattern, pathname) {
-    // Convertir patrón a expresión regular
-    // "/users/:id" → "/users/([^/]+)"
+    // Extraer los nombres de los parámetros del patrón (ej: ":id" → "id")
+    // Usamos una regex para encontrar todas las partes que empiezan con ":"
     const paramNames = (pattern.match(/:[a-zA-Z_][a-zA-Z0-9_]*/g) || [])
-      .map(p => p.substring(1));
+      .map(p => p.substring(1)); // Remover el ":" del inicio
     
+    // Convertir el patrón en una expresión regular
+    // Reemplazar cada ":param" con "([^/]+)" que captura cualquier cosa excepto "/"
     const regexPattern = pattern.replace(/:[a-zA-Z_][a-zA-Z0-9_]*/g, '([^/]+)');
+    // Crear la regex completa, asegurando que coincida exactamente con la ruta
     const regex = new RegExp(`^${regexPattern}$`);
     
+    // Verificar si el pathname coincide con la regex
     const match = pathname.match(regex);
     if (!match) {
-      return null;
+      return null; // No coincide, retornar null
     }
 
-    // Extraer parámetros desde los grupos de coincidencia
+    // Si coincide, extraer los valores de los parámetros
+    // Los grupos de captura en la regex corresponden a los parámetros
     const params = {};
     paramNames.forEach((name, index) => {
-      params[name] = match[index + 1];
+      params[name] = match[index + 1]; // match[0] es la coincidencia completa, así que empezamos en 1
     });
 
-    return params;
+    return params; // Retornar el objeto con los parámetros extraídos
   }
 
   /**
@@ -167,6 +172,21 @@ export class Router {
     if ((path === '/login' || path === '/') && loginService.isLoggedIn()) {
       toastService.info(`Sesión iniciada como ${loginService.getCurrentUser().name}`);
       history.pushState({}, '', '/home');
+      return this.loadRoute();
+    }
+
+    //PROTECCIO: Si intenta acceder a una ruta protegida sin estar autenticado, redirigir a /login
+    if(path !== '/login' && path !== '/' && !loginService.isLoggedIn()) {
+      toastService.warning('Debes iniciar sesión para acceder al portal.');
+      history.pushState({}, '', '/login');
+      return this.loadRoute();
+    }
+
+    //Proteccion: Si intenta acceder a una ruta no existente, redirigir a /home o /login según autenticación
+    if (!this.routes[path] && !Object.keys(this.routes).some(pattern => this.matchPattern(pattern, path))) {
+      toastService.warning('Ruta no encontrada. Redirigiendo al inicio.');
+      const redirectPath = loginService.isLoggedIn() ? '/home' : '/login';
+      history.pushState({}, '', redirectPath);
       return this.loadRoute();
     }
     

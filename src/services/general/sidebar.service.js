@@ -12,9 +12,9 @@
  * 
  * // Establecer opciones
  * sidebarService.setOptions([
- *   { label: 'Dashboard', route: '/home', icon: '📊' },
- *   { label: 'Usuarios', route: '/users', icon: '👥' },
- *   { label: 'Configuración', route: '/settings', icon: '⚙️' }
+ *   { label: 'Dashboard', route: '/home', iconClass: 'fa-solid fa-house' },
+ *   { label: 'Usuarios', route: '/users', iconClass: 'fa-solid fa-users' },
+ *   { label: 'Configuración', route: '/settings', iconClass: 'fa-solid fa-gear' }
  * ]);
  * 
  * // Suscribirse a cambios
@@ -28,10 +28,10 @@ class SidebarService {
     // ReactivoBehavior que controla las opciones del sidebar
     // Estructura de cada opción:
     // {
-    //   label: string,        - Texto a mostrar
-    //   route: string,        - Ruta a navegar
-    //   icon?: string,        - Emoji o icono opcional
-    //   id?: string           - ID único opcional
+    //   label: string,           - Texto a mostrar
+    //   route: string,           - Ruta a navegar
+    //   iconClass?: string       - Clases de Font Awesome (ej: 'fa-solid fa-house')
+    //   id?: string              - ID único opcional
     // }
     this.options = new ReactivoBehavior([]);
   }

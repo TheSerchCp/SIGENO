@@ -32,5 +32,11 @@ export const routesConfig =  {
         layout: 'app-layout',
         component: () => import('/src/views/private/home/home.js')
           .then(() => '<home-component></home-component>'),
+      },
+
+      "/users": {
+        layout: 'app-layout',
+        component: () => import('/src/views/private/users/users.js')
+          .then(() => '<users-component></users-component>'),
       }
     };

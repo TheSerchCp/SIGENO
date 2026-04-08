@@ -29,8 +29,19 @@ class AppSidebar extends BaseComponent {
       
       this.cacheDom();
       this.setupEventListeners();
+      this.initializeSidebarOptions();
       this.subscribeToSidebarOptions();
    }
+
+  initializeSidebarOptions() {
+    // Inicializar las opciones del sidebar con rutas y clases de Font Awesome
+    sidebarService.setOptions([
+      { label: 'Home', route: '/home', iconClass: 'fa-solid fa-house' },
+      { label: 'Usuarios', route: '/users', iconClass: 'fa-solid fa-users' },
+      { label: 'Configuración', route: '/settings', iconClass: 'fa-solid fa-gear' },
+      { label: 'Reportes', route: '/reports', iconClass: 'fa-solid fa-chart-bar' }
+    ]);
+  }
 
   cacheDom() {
     this.$logoutBtn = this.querySelector('#logout-btn');
@@ -66,7 +77,7 @@ class AppSidebar extends BaseComponent {
    * Renderiza las opciones de navegación dinámicamente
    * Crea elementos <button> para cada opción con evento click para navegar
    * 
-   * @param {Array} options - Array de opciones con { label, route, icon? }
+   * @param {Array} options - Array de opciones con { label, route, iconClass? }
    */
   renderNavOptions(options) {
     if (!this.$navOptions) return;
@@ -77,14 +88,18 @@ class AppSidebar extends BaseComponent {
     // Renderizar cada opción
     options.forEach((option, index) => {
       const button = document.createElement('button');
-      button.className = 'px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-sm text-left flex items-center gap-2';
+      button.className = 'px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:cursor-pointer dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-sm text-left flex items-center gap-2';
       
-      // Agregar contenido: icono (si existe) + label
-      const content = option.icon 
-        ? `<span class="text-lg">${option.icon}</span><span>${option.label}</span>`
-        : option.label;
+      // Agregar contenido: icono Font Awesome (si existe) + label
+      if (option.iconClass) {
+        const iconElem = document.createElement('i');
+        iconElem.className = `${option.iconClass} w-5 text-center`;
+        button.appendChild(iconElem);
+      }
       
-      button.innerHTML = content;
+      const labelElem = document.createElement('span');
+      labelElem.textContent = option.label;
+      button.appendChild(labelElem);
 
       // Navegar usando el router cuando se hace click
       button.addEventListener('click', () => {
