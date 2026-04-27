@@ -1,12 +1,32 @@
 <template id="modal-template">
-    <div id="modal-backdrop" class="fixed inset-0 bg-black/70  flex items-center justify-center transition-opacity duration-300 hidden" style="z-index: 9998;">
-        <div id="modal-content" class="bg-white dark:bg-gray-900 rounded-lg shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0">
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/70 backdrop-blur-sm  flex items-center justify-center transition-opacity duration-300 hidden" style="z-index: 9998;">
+        <div id="modal-content" class="bg-white border-1 border-[#141E3F] dark:bg-[#010B2B] rounded-lg shadow-2xl max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0">
+            
             <!-- Header -->
-            <div class="flex items-start gap-4 p-2 dark:border-gray-700">
-                <div id="modal-icon" class="text-xl flex-shrink-0">
-                    <!-- Icono dinámico -->
+             <div class="flex justify-end items-end pt-4 pr-4">
+                <div id="close-btn" class="flex justify-center items-center rounded-sm border-1 border-[#141E3F] bg-[#0D1638] w-6 h-6 hover:cursor-pointer">
+                    <p class="text-sm font-light">X</p>
                 </div>
-                <div class="flex-1">
+             </div>
+
+             <div class="flex justify-center items-center">
+                <div class="flex flex-row items-center gap-2 p-4 bg-[#091748] rounded-full">
+                        <div class="w-8 h-8 text-[#325CF8]">
+                                <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-current">
+                                <path d="M12 2L4 6.5V17.5L12 22L20 17.5V6.5L12 2Z" stroke-width="1.5"/>
+                                <path d="M4 6.5L12 11L20 6.5" stroke-width="1.5"/>
+                                <path d="M12 11V22" stroke-width="1.5"/>
+                                </svg>
+                        </div>
+                </div>  
+             </div>
+
+            <div class="flex justify-center  gap-4 p-2 dark:border-gray-700">
+                  <!-- Icono dinámico -->
+                <!-- <div id="modal-icon" class="text-xl flex-shrink-0">
+                  
+                </div> -->
+                <div class="flex justify-center">
                     <h2 id="modal-title" class="text-lg font-bold text-gray-900 dark:text-white">
                         <!-- Título dinámico -->
                     </h2>
@@ -14,7 +34,7 @@
             </div>
 
             <!-- Body -->
-            <div class="p-6">
+            <div class="p-6 flex justify-center">
                 <p id="modal-message" class="text-gray-600 dark:text-gray-400 mb-4">
                     <!-- Mensaje dinámico -->
                 </p>
@@ -23,12 +43,18 @@
                 </div>
             </div>
 
+            <div class="p-2 flex justify-center">
+                <div class="border-1 border-[#141E3F] bg-[#091233]">
+
+                </div>
+            </div>
+
             <!-- Footer con Botones -->
-            <div class="flex gap-3 p-2 border-t border-gray-200 dark:border-gray-700 justify-end">
-                <button id="modal-cancel-btn" class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
+            <div class="flex gap-3 p-2 justify-between px-6 pb-8">
+                <button id="modal-cancel-btn" class=" w-full px-6 py-2 rounded-lg bg-gray-200 dark:bg-[#091233] border-1 border-[#141E3F] text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors font-medium">
                     Cancelar
                 </button>
-                <button id="modal-confirm-btn" class="px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-600 text-white transition-colors font-medium">
+                <button id="modal-confirm-btn" class="w-full px-6 py-2 rounded-lg bg-[#2453F9] hover:bg-blue-600 border-1 border-[#141E3F] text-white transition-colors font-medium">
                     Confirmar
                 </button>
             </div>

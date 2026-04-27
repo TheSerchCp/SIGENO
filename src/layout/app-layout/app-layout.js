@@ -12,6 +12,7 @@
 import '/src/layout/app-layout/topbar/topbar.js';
 import '/src/layout/app-layout/sidebar/sidebar.js';
 import '/src/layout/app-layout/footer/footer.js';
+import "../../components/toast/toast.js";
 import { BaseComponent } from '/src/services/general/BaseComponent.js';
 
 
@@ -29,6 +30,34 @@ class AppLayout extends BaseComponent {
   async connectedCallback() {
     await this.loadTemplate('/src/layout/app-layout/app-layout.html', 
         '#app-layout-template');
+             // Agregar componentes globales
+      this.addGlobalComponents();
+  }
+
+    /**
+   * Agrega componentes globales al body (Loader, Toast y Modal)
+   */
+  addGlobalComponents() {
+    // Agregar loader si no existe
+    if (!document.querySelector('app-loader')) {
+      const loader = document.createElement('app-loader');
+      document.body.insertBefore(loader, document.body.firstChild);
+      console.log('✓ Loader agregado al body');
+    }
+
+    // Agregar toast si no existe
+    if (!document.querySelector('app-toast')) {
+      const toast = document.createElement('app-toast');
+      document.body.appendChild(toast);
+      console.log('✓ Toast agregado al body');
+    }
+
+    // Agregar modal si no existe
+    if (!document.querySelector('app-modal')) {
+      const modal = document.createElement('app-modal');
+      document.body.appendChild(modal);
+      console.log('✓ Modal agregado al body');
+    }
   }
 }
 

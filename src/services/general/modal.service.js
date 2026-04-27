@@ -39,7 +39,6 @@ class ModalService {
       isOpen: false,
       title: '',
       message: '',
-      icon: 'ℹ',
       confirmText: 'Confirmar',
       cancelText: 'Cancelar',
       showDefaultButtons: true,
@@ -53,7 +52,6 @@ class ModalService {
    * @param {Object} options - Configuración del modal
    * @param {string} options.title - Título del modal
    * @param {string} options.message - Mensaje/contenido principal
-   * @param {string} options.icon - Icono a mostrar (emoji o símbolo)
    * @param {string} options.confirmText - Texto del botón confirmar (default: 'Confirmar')
    * @param {string} options.cancelText - Texto del botón cancelar (default: 'Cancelar')
    * @param {Function} options.onConfirm - Función a ejecutar al confirmar
@@ -65,7 +63,6 @@ class ModalService {
       isOpen: true,
       title: options.title || '',
       message: options.message || '',
-      icon: options.icon || 'ℹ',
       confirmText: options.confirmText || 'Confirmar',
       cancelText: options.cancelText || 'Cancelar',
       showDefaultButtons: options.showDefaultButtons !== false,
@@ -93,13 +90,11 @@ class ModalService {
    * @param {string} title - Título del modal
    * @param {string} message - Mensaje
    * @param {Function} onConfirm - Función al confirmar
-   * @param {string} icon - Icono (default: '⚠')
    */
-  confirm(title, message, onConfirm, icon = '⚠') {
+  confirm(title, message, onConfirm) {
     this.show({
       title,
       message,
-      icon,
       confirmText: 'Confirmar',
       onConfirm
     });
@@ -114,7 +109,6 @@ class ModalService {
     this.show({
       title: 'Eliminar',
       message: `¿Estás seguro de que deseas eliminar "${itemName}"?`,
-      icon: '🗑️',
       confirmText: 'Eliminar',
       onConfirm
     });
@@ -129,7 +123,6 @@ class ModalService {
     this.show({
       title,
       message,
-      icon: 'ℹ',
       confirmText: 'Aceptar'
     });
   }
@@ -144,7 +137,6 @@ class ModalService {
     this.show({
       title,
       message,
-      icon: '⚠️',
       confirmText: 'Continuar',
       onConfirm
     });
@@ -159,7 +151,6 @@ class ModalService {
     this.show({
       title,
       message,
-      icon: '❌',
       confirmText: 'Aceptar'
     });
   }

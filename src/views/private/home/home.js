@@ -1,4 +1,5 @@
 import { BaseComponent } from "../../../services/general/BaseComponent";
+import '/src/views/private/sharedComponents.js';
 
 class HomeComponent extends BaseComponent{
     async connectedCallback(){

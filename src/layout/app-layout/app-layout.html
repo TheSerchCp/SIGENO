@@ -1,13 +1,30 @@
 <template id="app-layout-template">
-  <div class="h-screen flex flex-col bg-white dark:bg-gray-950">
-    <app-topbar text="Hola"></app-topbar>
+  <div class="h-screen w-screen flex overflow-hidden bg-[#070C27]">
 
-    <div class="flex flex-1 overflow-hidden">
+    <!-- SIDEBAR -->
+    <aside class="w-64 shrink-0 h-screen flex flex-col">
       <app-sidebar></app-sidebar>
+    </aside>
 
-      <main id="router-outlet" class="flex-1 p-8 overflow-auto"></main>
+    <!-- MAIN CONTENT AREA -->
+    <div class="flex-1 flex flex-col overflow-hidden h-full">
+      
+      <!-- TOPBAR -->
+      <header class="h-16 shrink-0">
+        <app-topbar></app-topbar>
+      </header>
+
+      <!-- MAIN CONTENT -->
+      <main class="flex-1 overflow-y-auto p-6">
+        <div id="router-outlet"></div>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="h-12 shrink-0">
+        <app-footer></app-footer>
+      </footer>
+
     </div>
 
-    <app-footer></app-footer>
   </div>
 </template>

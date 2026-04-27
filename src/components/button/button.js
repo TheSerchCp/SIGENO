@@ -90,7 +90,7 @@ export class ButtonComponent extends BaseComponent {
     const sizeClasses = this.getSizeClasses(size);
 
     // Combinar clases base, variantes, tamaños y clases personalizadas
-    const baseClasses = 'px-4 py-2 rounded font-semibold transition disabled:opacity-50';
+    const baseClasses = 'px-4 py-2 rounded-md font-semibold transition disabled:opacity-50';
     this.btn.className = `${baseClasses} ${variantClasses} ${sizeClasses} ${customClasses}`.trim();
     
     this.updateButtonContent();
@@ -115,7 +115,9 @@ export class ButtonComponent extends BaseComponent {
       'danger': 'bg-red-600 hover:bg-red-700 text-white hover:cursor-pointer dark:bg-red-700 dark:hover:bg-red-600',
       'success': 'bg-green-600 hover:bg-green-700 text-white hover:cursor-pointer dark:bg-green-700 dark:hover:bg-green-600',
       'outline': 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 hover:cursor-pointer dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-900/20',
-      'ghost': 'text-gray-600 hover:bg-gray-100 hover:cursor-pointer dark:text-gray-400 dark:hover:bg-gray-800'
+      'ghost': 'text-gray-600 hover:bg-gray-100 hover:cursor-pointer dark:text-gray-400 dark:hover:bg-gray-800',
+      'whiter': 'bg-[#FBFAFC] text-[#000111] hover:bg-gray-100 hover:cursor-pointer dark:text-gray-400 dark:hover:bg-gray-800',
+
     };
     return variants[variant] || variants['primary'];
   }

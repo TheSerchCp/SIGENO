@@ -1,47 +1,124 @@
 <template id="login-template">
-    <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 via-purple-600 to-pink-500 dark:from-gray-800 dark:via-gray-900 dark:to-gray-950">
-        <div class="w-full max-w-md p-8 bg-white dark:bg-gray-900 rounded-lg shadow-2xl">
-            <h1 class="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">Iniciar sesión</h1>
+    <div class="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-500 via-purple-600 to-pink-500 dark:from-[#06072E] dark:via-[#1C1F6D] dark:to-[#0B0D44]">
+        <div class="w-full max-w-3xl bg-white dark:bg-[#080C28] rounded-lg shadow-2xl">
+            <div class="grid grid-cols-6">
+                <div class="col-span-2 bg-gradient-to-t from-[#060C41] to-[#1A1C7F] p-5 rounded-l-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex flex-row items-center gap-2">
+                            <div class="w-6 h-6 text-blue-400">
+                                <svg viewBox="0 0 24 24" fill="none" class="w-full h-full stroke-current">
+                                    <path d="M12 2L4 6.5V17.5L12 22L20 17.5V6.5L12 2Z" stroke-width="1.5"/>
+                                    <path d="M4 6.5L12 11L20 6.5" stroke-width="1.5"/>
+                                    <path d="M12 11V22" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <h1 class="text-2xl font-bold">SCP</h1>
+                        </div>    
+                        
+                        <div class="flex flex-col">
+                            <div class="">
+                                <h2 class="text-3xl font-bold pt-8 pb-6">Bienvenido</h1>
+                                <div class="w-8 h-1 bg-[#2628b6] rounded-sm"></div>
+                            </div>
+                            
+                            <div class="pt-6 ">
+                                <p class="font-medium text-md ">Un poco de todo para tu conveniencia.</p>
+                            </div>
+                        </div>
+                    </div>
 
-            <app-form id="loginForm">
-                <!-- Email Input -->
-                <div slot="fields" class="mb-6">
-                    <input-component 
-                        id="emailInput"
-                        type="email" 
-                        placeholder="correo@example.com"
-                        required
-                        name="email"
-                        label="Email"
-                        class="w-full"
-                    ></input-component>
+                    <div class="text-center">
+                        <p class="font-light text-[10px] text-gray-400">2026 SCP. Todos los derechos reservados.</p>
+                    </div>
                 </div>
 
-                <!-- Password Input -->
-                <div slot="fields" class="mb-6">
-                    <input-component 
-                        id="passwordInput"
-                        type="password" 
-                        placeholder="Tu contraseña"
-                        required
-                        name="password"
-                        label="Contraseña"
-                        class="w-full"
-                    ></input-component>
-                </div>
+                <div class="col-span-4 px-10 py-4">
+                    <div class="flex flex-col justify-between">
+                        <p class="text-md font-semibold  mb-5 text-gray-800 dark:text-gray-400">
+                            ¿Aun no tienes cuenta?
+                            <a class="ml-2 text-md font-semibold text-blue-600 dark:text-[#5984FD]">Crear cuenta</a>
+                        </p>
 
-                <!-- Submit Button -->
-                <div slot="fields">
-                    <app-button 
-                        id="submitBtn"
-                        disabled
-                        variant="primary" 
-                        size="md"
-                        text="Iniciar Sesión"
-                        class="w-full"
-                    ></app-button>
+                                            <app-form id="loginForm">
+                        <!-- Email Input -->
+                        <div slot="fields" class="mb-6">
+                            <input-component 
+                                id="emailInput"
+                                type="email" 
+                                placeholder="correo@example.com"
+                                required
+                                name="email"
+                                label="Correo electrònico"
+                                class="w-full"
+                                icon="fa-regular fa-envelope"
+                            ></input-component>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div slot="fields" class="mb-6">
+                            <input-component 
+                                id="passwordInput"
+                                type="password" 
+                                placeholder="Tu contraseña"
+                                required
+                                name="password"
+                                label="Contraseña"
+                                class="w-full"
+                                icon="fa-solid fa-lock"
+                            ></input-component>
+                        </div>
+
+                        <div slot="fields" class="mb-6 flex flex-row justify-between">
+                            <input-component 
+                                id="checkRemember"
+                                type="checkbox" 
+                                name="checkRemenber"
+                                label="Recordarme"
+                                label-position="rigth"
+                                bg-color="#2852EF"
+                                padding="8"
+                            ></input-component>
+                            <div>
+                                <a class="text-md font-semibold text-blue-600 dark:text-[#5984FD]">Recuperar contraseña</a>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div slot="fields" class="mb-6">
+                            <app-button 
+                                id="submitBtn"
+                                disabled
+                                variant="primary" 
+                                size="md"
+                                text="Iniciar Sesión"
+                                class="w-full"
+                            ></app-button>
+                        </div>
+
+                        <!-- <div slot="fields" class="flex flex-row justify-center items-center gap-2 mb-6">
+                        <div class="w-40 h-0.5 bg-[#303556] rounded-sm"></div>
+                        <p class="text-sm text-[#8B8EAA]">o continùa con</p>
+                        <div class="w-40 h-0.5 bg-[#303556] rounded-sm"></div>
+                        </div>
+
+                        <div slot="fields">
+                                <app-button 
+                                id="submitBtnGoogle"
+                                disabled
+                                variant="whiter" 
+                                size="md"
+                                text="Iniciar sesión con Google"
+                                class="w-full"
+                            ></app-button>
+                        </div> -->
+                    </app-form>
+
+                        <div class="text-center">
+                            <p class="font-light text-[10px] text-[#8B8EAA]">Tu informaciòn està protegida y segura con nostros.</p>
+                        </div>
+                    </div>
                 </div>
-            </app-form>
+            </div>
         </div>
     </div>
 </template>

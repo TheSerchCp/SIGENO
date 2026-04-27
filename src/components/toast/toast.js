@@ -51,73 +51,99 @@ export class ToastComponent extends BaseComponent {
     });
   }
 
-  createToastElement(toast) {
-    const toastEl = document.createElement('div');
-    toastEl.className = `
-      toast-item pointer-events-auto
-      animate-slide-in-right
-      ${this.getToastClasses(toast.type)}
-      p-4 rounded-lg shadow-lg
-      flex items-center gap-3
-      min-w-80
-      max-w-md
-    `;
-    
-    const icon = this.getIcon(toast.type);
-    
-    toastEl.innerHTML = `
-      <span class="text-xl">${icon}</span>
-      <div class="flex-1">
-        <p class="font-semibold">${toast.message}</p>
-        ${toast.description ? `<p class="text-sm opacity-90">${toast.description}</p>` : ''}
-      </div>
-      <button class="close-btn text-lg opacity-70 hover:opacity-100 transition-opacity cursor-pointer">✕</button>
-    `;
-    
-    const closeBtn = toastEl.querySelector('.close-btn');
-    closeBtn.addEventListener('click', () => {
-      toastEl.classList.add('animate-slide-out-right');
-      setTimeout(() => {
-        toastService.removeToast(toast.id);
-      }, 300);
-    });
-    
-    // Auto-close después del tiempo especificado
-    if (toast.duration && toast.duration > 0) {
-      setTimeout(() => {
-        if (this.container.contains(toastEl)) {
-          toastEl.classList.add('animate-slide-out-right');
-          setTimeout(() => {
-            toastService.removeToast(toast.id);
-          }, 300);
-        }
-      }, toast.duration);
+createToastElement(toast) {
+  const toastEl = document.createElement('div');
+
+  toastEl.className = `
+    group relative overflow-hidden
+    backdrop-blur-sm bg-white/5
+    border border-white/10
+    shadow-[0_8px_32px_rgba(0,0,0,0.35)]
+    text-white
+    rounded-xl
+    px-4 py-3
+    flex items-center gap-4
+    min-w-[320px] max-w-md
+    transition-all duration-300
+    hover:bg-white/10
+    animate-slide-in-right
+  `;
+
+  const { icon, iconBg, accent } = this.getVisualConfig(toast.type);
+
+  toastEl.innerHTML = `
+    <!-- Accent line -->
+    <div class="absolute left-0 top-0 h-full w-[3px] ${accent}"></div>
+
+    <!-- Icon -->
+    <div class="flex items-center justify-center w-10 h-10 rounded-full ${iconBg}">
+      <span class="text-lg">${icon}</span>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1">
+      <p class="font-semibold text-sm">${toast.message}</p>
+      ${
+        toast.description
+          ? `<p class="text-xs text-white/70 mt-0.5">${toast.description}</p>`
+          : ''
+      }
+    </div>
+
+    <!-- Close -->
+    <button class="close-btn text-white/40 hover:text-white/80 transition cursor-pointer text-lg">
+      ✕
+    </button>
+  `;
+
+  const closeBtn = toastEl.querySelector('.close-btn');
+
+  closeBtn.addEventListener('click', () => {
+    toastEl.classList.add('animate-slide-out-right');
+    setTimeout(() => toastService.removeToast(toast.id), 300);
+  });
+
+  if (toast.duration && toast.duration > 0) {
+    setTimeout(() => {
+      if (this.container.contains(toastEl)) {
+        toastEl.classList.add('animate-slide-out-right');
+        setTimeout(() => toastService.removeToast(toast.id), 300);
+      }
+    }, toast.duration);
+  }
+
+  return toastEl;
+}
+
+
+getVisualConfig(type) {
+  const config = {
+    success: {
+      icon: '✓',
+      iconBg: 'bg-green-500/20 text-green-400',
+      accent: 'bg-green-400'
+    },
+    error: {
+      icon: '✕',
+      iconBg: 'bg-red-500/20 text-red-400',
+      accent: 'bg-red-400'
+    },
+    info: {
+      icon: 'ℹ',
+      iconBg: 'bg-blue-500/20 text-blue-400',
+      accent: 'bg-blue-400'
+    },
+    warning: {
+      icon: '⚠',
+      iconBg: 'bg-yellow-500/20 text-yellow-400',
+      accent: 'bg-yellow-400'
     }
-    
-    return toastEl;
-  }
+  };
 
-  getToastClasses(type) {
-    const classes = {
-      success: 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-l-4 border-green-500',
-      error: 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-l-4 border-red-500',
-      info: 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-l-4 border-blue-500',
-      warning: 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-l-4 border-yellow-500'
-    };
-    
-    return classes[type] || classes.info;
-  }
+  return config[type] || config.info;
+}
 
-  getIcon(type) {
-    const icons = {
-      success: '✓',
-      error: '✗',
-      info: 'ℹ',
-      warning: '⚠'
-    };
-    
-    return icons[type] || icons.info;
-  }
+
 }
 
 customElements.define('app-toast', ToastComponent);

@@ -1,14 +1,26 @@
 <template id="users-template">
-  <div class="min-h-screen bg-white dark:bg-gray-900 p-8">
+  <div class="min-h-screen bg-white dark:bg-transparent p-8">
     <div class="max-w-7xl mx-auto">
       <!-- Encabezado -->
       <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Gestión de Usuarios</h1>
-        <p class="text-gray-600 dark:text-gray-400">Demo de componentes Select y Table con búsqueda reactiva</p>
+        <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Gestión de Usuarios</h1>
+        <p class="text-md text-gray-600 dark:text-gray-400">Administra los usuarios del sistema y sus permisos.</p>
       </div>
 
       <!-- Controles -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="bg-[#0A102F] p-4 rounded-md border-1 border-[#121837] grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Búsqueda -->
+        <div>
+            <input-component 
+                id="searchInput"
+                type="text" 
+                placeholder="Buscar por nombre, email o usuario..."
+                name="component"
+                label=""
+                class="w-full"
+                icon="fa-solid fa-magnifying-glass"
+             ></input-component>
+        </div>
         <!-- Filtro por Rol -->
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -18,16 +30,6 @@
             id="roleFilter" 
             placeholder="Selecciona un rol">
           </select-component>
-        </div>
-
-        <!-- Búsqueda -->
-        <div>
-          <input-component
-            id="searchInput"
-            type="text"
-            placeholder="Buscar por nombre, email o rol..."
-            label="Buscar Usuario">
-          </input-component>
         </div>
       </div>
 

@@ -3,6 +3,8 @@
  */
 import { BaseComponent } from '/src/services/general/BaseComponent.js';
 import { themeService } from '/src/services/general/theme.service.js';
+import { toastService } from '../../../services/general/toast.service.js';
+
 
 class AppTopbar extends BaseComponent {
   static get observedAttributes() {
@@ -15,6 +17,7 @@ class AppTopbar extends BaseComponent {
     this.update();
     this.setupThemeToggle();
     this.subscribeToThemeChanges();
+    this.setupEventListeners();
   }
 
   attributeChangedCallback(oldValue, newValue) {
@@ -28,11 +31,17 @@ class AppTopbar extends BaseComponent {
     this.$themeToggle = this.querySelector('#theme-toggle');
     this.$themeIcon = this.querySelector('#theme-icon');
     this.$themeText = this.querySelector('#theme-text');
+    this.$testToast = this.querySelector('#test-toast');
   }
 
   update() {
     if(this.$topbar) {
-      this.$topbar.textContent = this.getAttribute('text') ?? '';
+      console.log("Local user", localStorage.getItem('currentUser'))
+      const userObject = JSON.parse(localStorage.getItem('currentUser'));
+      console.log("Nombre usuario: ", userObject.name)
+      let textWelcomeUser = 'Hola, ' + (userObject.name);
+      console.log("Welcome user: ", textWelcomeUser)
+      this.$topbar.textContent = textWelcomeUser ?? '';
     }
   }
 
@@ -70,6 +79,16 @@ class AppTopbar extends BaseComponent {
       this.$themeIcon.textContent = '🌙';
       this.$themeText.textContent = 'Dark';
     }
+  }
+
+  setupEventListeners(){
+      this.$testToast.addEventListener('click', () => {
+             toastService.success(
+                    'Bienvenido',
+                    `Sesión iniciada como test`,
+                    3000
+                );
+    });
   }
 }
 

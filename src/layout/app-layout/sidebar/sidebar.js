@@ -50,6 +50,7 @@ class AppSidebar extends BaseComponent {
   }
 
   setupEventListeners() {
+    console.log("Nav options: ", this.$navOptions)
     if (this.$logoutBtn) {
       this.$logoutBtn.addEventListener('click', () => this.handleLogout());
     }
@@ -73,46 +74,56 @@ class AppSidebar extends BaseComponent {
     }
   }
 
+
+
   /**
    * Renderiza las opciones de navegación dinámicamente
    * Crea elementos <button> para cada opción con evento click para navegar
    * 
    * @param {Array} options - Array de opciones con { label, route, iconClass? }
    */
-  renderNavOptions(options) {
-    if (!this.$navOptions) return;
+renderNavOptions(options) {
+  if (!this.$navOptions) return;
 
-    // Limpiar opciones previas
-    this.$navOptions.innerHTML = '';
+  this.$navOptions.innerHTML = '';
 
-    // Renderizar cada opción
-    options.forEach((option, index) => {
-      const button = document.createElement('button');
-      button.className = 'px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 hover:cursor-pointer dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-sm text-left flex items-center gap-2';
-      
-      // Agregar contenido: icono Font Awesome (si existe) + label
-      if (option.iconClass) {
-        const iconElem = document.createElement('i');
-        iconElem.className = `${option.iconClass} w-5 text-center`;
-        button.appendChild(iconElem);
+  const currentPath = window.location.pathname;
+
+  options.forEach((option) => {
+    const button = document.createElement('button');
+
+    const isActive = currentPath === option.route;
+
+    button.className = `
+      px-4 py-2 rounded-lg text-left flex items-center gap-2
+      transition-colors font-medium text-sm
+      ${isActive 
+        ? 'bg-blue-900/30 text-blue-400' 
+        : 'text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400'
       }
-      
-      const labelElem = document.createElement('span');
-      labelElem.textContent = option.label;
-      button.appendChild(labelElem);
+    `;
 
-      // Navegar usando el router cuando se hace click
-      button.addEventListener('click', () => {
-        if (window.appRouter) {
-          window.appRouter.navigate(option.route);
-        } else {
-          console.error('Router no disponible');
-        }
-      });
+    // Icono
+    if (option.iconClass) {
+      const iconElem = document.createElement('i');
+      iconElem.className = `${option.iconClass} w-5 text-center`;
+      button.appendChild(iconElem);
+    }
 
-      this.$navOptions.appendChild(button);
+    const labelElem = document.createElement('span');
+    labelElem.textContent = option.label;
+    button.appendChild(labelElem);
+
+    // Navegación
+    button.addEventListener('click', () => {
+      if (window.appRouter) {
+        window.appRouter.navigate(option.route);
+      }
     });
-  }
+
+    this.$navOptions.appendChild(button);
+  });
+}
 
   displayUserInfo() {
     const userEmail = localStorage.getItem('userEmail') || 'usuario@email.com';
@@ -125,8 +136,8 @@ class AppSidebar extends BaseComponent {
     modalService.show({
       title: 'Cerrar sesión',
       message: '¿Estás seguro de que deseas cerrar sesión?',
-      icon: '👋',
-      confirmText: 'Cerrar sesión',
+      icon: '',
+      confirmText: 'Confirmar',
       onConfirm: () => {
         localStorage.clear();
         window.location.href = '/login';

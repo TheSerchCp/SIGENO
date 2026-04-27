@@ -29,7 +29,7 @@
  */
 
 import { BaseComponent } from '../../services/general/BaseComponent.js';
-import { ReactivoBehavior } from '../../services/general/ReactivoBehavior.js';
+import { ReactivoBehavior } from '../../services/general/ReactiveBehavior.js';
 
 export class SelectComponent extends BaseComponent {
   constructor() {

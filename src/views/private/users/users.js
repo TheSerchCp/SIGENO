@@ -1,9 +1,5 @@
 import { BaseComponent } from '../../../services/general/BaseComponent.js';
-
-// Importar componentes
-import '/src/components/select/select.js';
-import '/src/components/table/table.js';
-import '/src/components/input/input.js';
+import '/src/views/private/sharedComponents.js';
 
 class UsersComponent extends BaseComponent {
   constructor() {

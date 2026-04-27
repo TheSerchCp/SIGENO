@@ -35,11 +35,12 @@ export class ModalComponent extends BaseComponent {
   cacheDom() {
     this.backdrop = this.querySelector('#modal-backdrop');
     this.modalContent = this.querySelector('#modal-content');
-    this.iconEl = this.querySelector('#modal-icon');
+    //this.iconEl = this.querySelector('#modal-icon');
     this.titleEl = this.querySelector('#modal-title');
     this.messageEl = this.querySelector('#modal-message');
     this.customContentEl = this.querySelector('#modal-custom-content');
     this.cancelBtn = this.querySelector('#modal-cancel-btn');
+    this.btnClose = this.querySelector('#close-btn')
     this.confirmBtn = this.querySelector('#modal-confirm-btn');
     
     if (!this.backdrop) {
@@ -50,6 +51,10 @@ export class ModalComponent extends BaseComponent {
   setupEventListeners() {
     // Cerrar al hacer click en cancelar
     this.cancelBtn.addEventListener('click', () => {
+      this.close();
+    });
+
+    this.btnClose.addEventListener('click', () => {
       this.close();
     });
 
@@ -72,7 +77,7 @@ export class ModalComponent extends BaseComponent {
 
   async openModal(state) {
     // Configurar contenido del modal
-    this.iconEl.textContent = state.icon || 'ℹ';
+    // this.iconEl.textContent = state.icon || 'ℹ';
     this.titleEl.textContent = state.title || 'Modal';
     this.messageEl.textContent = state.message || '';
 
