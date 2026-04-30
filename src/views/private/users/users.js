@@ -28,13 +28,16 @@ class UsersComponent extends BaseComponent {
   }
 
   setupComponents() {
+    console.log("Roles disponibles:", this.roles);
     const roleFilter = this.querySelector('#roleFilter');
     const searchInput = this.querySelector('#searchInput');
     const usersTable = this.querySelector('#usersTable');
     const filterInfo = this.querySelector('#filterInfo');
 
     // Configurar Select de Roles
-    roleFilter.setOptions(this.roles, 'nombre', 'id');
+    roleFilter.addEventListener('select-ready', () => {
+      roleFilter.setOptions(this.roles, 'nombre', 'id');
+    });
 
     // Configurar Tabla
     this.configureTable(usersTable, '');
@@ -42,18 +45,30 @@ class UsersComponent extends BaseComponent {
     // Listener del Select - Cambiar rol y refilter
     roleFilter.addEventListener('select-change', (e) => {
       const selectedRole = e.detail.value;
+      console.log("Rol seleccionado:", selectedRole);
+      if(Array.isArray(selectedRole)) {
+        console.log("Roles seleccionados (multiple):", selectedRole);
+        //Filtrar tabla por múltiples roles
+        usersTable.setRowValidator((row) => {
+          return selectedRole.length === 0 || selectedRole.includes(row.rol);
+        });
+      }else{
+        //Filtrar tabla por un solo rol
+        usersTable.setRowValidator((row) => {
+          return !selectedRole || row.rol === selectedRole;
+        });
+      }
+      // // Actualizar rol de la tabla
+      // usersTable.setRole(selectedRole || 'usuario');
       
-      // Actualizar rol de la tabla
-      usersTable.setRole(selectedRole || 'usuario');
-      
-      // Aplicar validador por rol
-      usersTable.setRowValidator((row, role) => {
-        // Si se selecciona un rol específico, mostrar solo esos usuarios
-        if (selectedRole && role !== 'usuario') {
-          return row.rol === role;
-        }
-        return true;
-      });
+      // // Aplicar validador por rol
+      // usersTable.setRowValidator((row, role) => {
+      //   // Si se selecciona un rol específico, mostrar solo esos usuarios
+      //   if (selectedRole && role !== 'usuario') {
+      //     return row.rol === role;
+      //   }
+      //   return true;
+      // });
 
       this.updateFilterInfo(usersTable, searchInput.getValue());
     });

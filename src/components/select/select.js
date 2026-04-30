@@ -39,46 +39,95 @@ export class SelectComponent extends BaseComponent {
     this.valueProp = null;
     this.selectedValue$ = new ReactivoBehavior(null);
     this.selectedData$ = new ReactivoBehavior(null);
+    this.placeholder = 'Selecciona una opción';
+    this.isMultiple = false;
+    this.selectedValues = new Set();
+    this.selectedItems = new Map(); // index -> data
   }
 
   async connectedCallback() {
     await this.loadTemplate('/src/components/select/select.html', '#select-template');
     this.cacheDom();
     this.readAttributes();
-    this.setupEventListeners();
+    this.setupEvents();
+
+    this.emit('select-ready'); //Informar que el select está listo para recibir opciones o eventos
   }
 
   cacheDom() {
-    this.selectElement = this.querySelector('select');
+    this.trigger = this.querySelector('#trigger');
+    this.dropdown = this.querySelector('#dropdown');
+    this.optionsContainer = this.querySelector('#options-container');
+    this.selectedText = this.querySelector('#selected-text');
+    this.arrow = this.querySelector('#arrow');
+    this.clearBtn = this.querySelector('#clear-btn');
   }
 
   readAttributes() {
-    const placeholder = this.getAttribute('placeholder') || 'Selecciona una opción';
-    const disabled = this.hasAttribute('disabled');
-    
-    if (this.selectElement) {
-      this.selectElement.disabled = disabled;
-      if (placeholder) {
-        const option = document.createElement('option');
-        option.value = '';
-        option.textContent = placeholder;
-        option.disabled = true;
-        option.selected = true;
-        this.selectElement.appendChild(option);
-      }
+    this.isMultiple = this.hasAttribute('multiple');
+    this.placeholder = this.getAttribute('placeholder') || this.placeholder;
+    const label = this.getAttribute('label') || '';
+
+    if (label) {
+      this.querySelector('#label').textContent = label;
     }
+
+    this.selectedText.textContent = this.placeholder;
   }
 
-  setupEventListeners() {
-    if (this.selectElement) {
-      this.selectElement.addEventListener('change', (e) => {
-        this.handleChange(e);
-      });
-    }
+  setupEvents() {
+    // Toggle dropdown
+    this.trigger.addEventListener('click', () => {
+      this.dropdown.classList.toggle('hidden');
+      this.arrow.classList.toggle('rotate-180');
+    });
+
+    // Click fuera
+    document.addEventListener('click', (e) => {
+      if (!this.contains(e.target)) {
+        this.close();
+      }
+    });
+
+    // Clear button
+    this.clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // ❌ evita abrir el dropdown
+      this.reset(true);    // 🔥 reset con emisión
+    });
   }
+
+  open() {
+    this.dropdown.classList.remove('hidden');
+    this.arrow.classList.add('rotate-180');
+  }
+
+  close() {
+    this.dropdown.classList.add('hidden');
+    this.arrow.classList.remove('rotate-180');
+  }
+
+  toggleOption(index, data, value, text, li) {
+  const checkbox = li.querySelector('input');
+
+  const isSelected = this.selectedValues.has(value);
+
+  if (isSelected) {
+    this.selectedValues.delete(value);
+    this.selectedItems.delete(index);
+    li.classList.remove('bg-[#1A2340]', 'text-white');
+    checkbox.checked = false;
+  } else {
+    this.selectedValues.add(value);
+    this.selectedItems.set(index, data);
+    li.classList.add('bg-[#1A2340]', 'text-white');
+    checkbox.checked = true;
+  }
+
+  this.updateMultiUI();
+}
 
   /**
-   * Configura las opciones del select
+   * 🔥 API ORIGINAL (SE MANTIENE)
    */
   setOptions(options = [], displayProp = 'name', valueProp = null) {
     this.options = Array.isArray(options) ? options : [];
@@ -88,64 +137,112 @@ export class SelectComponent extends BaseComponent {
   }
 
   /**
-   * Renderiza las opciones en el select
+   * 🔥 Render custom (aquí está la magia)
    */
   renderOptions() {
-    if (!this.selectElement) return;
+    if (!this.optionsContainer) return;
 
-    // Limpiar opciones (excepto placeholder)
-    while (this.selectElement.options.length > 1) {
-      this.selectElement.remove(1);
-    }
+    this.optionsContainer.innerHTML = '';
 
-    // Agregar opciones
+    // // Placeholder option
+    // const placeholderItem = this.createOptionItem({
+    //   text: this.placeholder,
+    //   value: null,
+    //   index: -1
+    // }, true);
+
+    // this.optionsContainer.appendChild(placeholderItem);
+
+    // Opciones reales
     this.options.forEach((option, index) => {
-      const optElement = document.createElement('option');
-      optElement.value = this.valueProp ? option[this.valueProp] : index;
-      optElement.textContent = option[this.displayProp] || JSON.stringify(option);
-      optElement.dataset.index = index;
-      this.selectElement.appendChild(optElement);
+      const text = option[this.displayProp] || JSON.stringify(option);
+      const value = this.valueProp ? option[this.valueProp] : option;
+
+      const item = this.createOptionItem({
+        text,
+        value,
+        index,
+        data: option
+      });
+
+      this.optionsContainer.appendChild(item);
     });
   }
 
-  /**
-   * Maneja el cambio de selección
-   */
-  handleChange(event) {
-    const selectedIndex = event.target.selectedIndex;
-    
-    if (selectedIndex <= 0) {
-      this.selectedValue$.next(null);
-      this.selectedData$.next(null);
-      return;
+createOptionItem({ text, value, index, data }) {
+  const li = document.createElement('li');
+
+  li.className = `
+    px-4 py-2 cursor-pointer flex items-center justify-between
+    hover:bg-[#1A2340] transition-all
+  `;
+
+  li.dataset.index = index;
+
+  // 🔥 CONTENIDO
+  if (this.isMultiple) {
+    li.innerHTML = `
+      <div class="flex items-center gap-2">
+        <input type="checkbox" class="accent-blue-500 pointer-events-none">
+        <span>${text}</span>
+      </div>
+    `;
+  } else {
+    li.textContent = text;
+  }
+
+  li.addEventListener('click', () => {
+    if (this.isMultiple) {
+      this.toggleOption(index, data, value, text, li);
+    } else {
+      this.selectOption(index, data, value, text);
     }
+  });
 
-    const optionIndex = parseInt(event.target.options[selectedIndex].dataset.index);
-    const selectedData = this.options[optionIndex];
-    const selectedValue = this.valueProp 
-      ? selectedData[this.valueProp] 
-      : selectedData;
+  return li;
+}
 
-    this.selectedData$.next(selectedData);
-    this.selectedValue$.next(selectedValue);
+selectOption(index, data, value, text) {
+  this.selectedText.textContent = text;
+  this.selectedText.classList.remove('text-gray-400');
+  this.selectedText.classList.add('text-white');
 
-    this.emit('select-change', {
-      value: selectedValue,
-      data: selectedData,
-      displayText: event.target.options[selectedIndex].textContent
+  // 🔥 mostrar botón clear
+  this.clearBtn.classList.remove('hidden');
+
+  this.selectedData$.next(data);
+  this.selectedValue$.next(value);
+
+  this.emit('select-change', {
+    value,
+    data,
+    displayText: text
+  });
+
+  this.highlightOption(index);
+  this.close();
+}
+
+  highlightOption(selectedIndex) {
+    const items = this.optionsContainer.querySelectorAll('li');
+
+    items.forEach(item => {
+      item.classList.remove('bg-[#1A2340]', 'text-white');
     });
+
+    const selected = this.optionsContainer.querySelector(`li[data-index="${selectedIndex}"]`);
+    if (selected) {
+      selected.classList.add('bg-[#1A2340]', 'text-white');
+    }
   }
 
   /**
-   * Suscribirse a cambios de valor
+   * 🔥 API ORIGINAL (sin cambios)
    */
   onChange(callback) {
     this.selectedValue$.subscribe(callback);
   }
 
-  /**
-   * Suscribirse a cambios de datos
-   */
   onDataChange(callback) {
     this.selectedData$.subscribe(callback);
   }
@@ -159,27 +256,121 @@ export class SelectComponent extends BaseComponent {
   }
 
   setValue(value) {
-    if (!this.selectElement) return;
-    const option = this.selectElement.querySelector(`option[value="${value}"]`);
-    if (option) {
-      this.selectElement.value = value;
-      this.selectElement.dispatchEvent(new Event('change', { bubbles: true }));
+    if (!this.isMultiple) {
+      const index = this.options.findIndex(opt =>
+        this.valueProp ? opt[this.valueProp] === value : opt === value
+      );
+
+      if (index !== -1) {
+        const data = this.options[index];
+        const text = data[this.displayProp];
+        this.selectOption(index, data, value, text);
+      }
+      return;
     }
+
+    // 🔥 MULTI
+    if (!Array.isArray(value)) return;
+
+    value.forEach(val => {
+      const index = this.options.findIndex(opt =>
+        this.valueProp ? opt[this.valueProp] === val : opt === val
+      );
+
+      if (index !== -1) {
+        const data = this.options[index];
+        this.selectedValues.add(val);
+        this.selectedItems.set(index, data);
+      }
+    });
+
+    this.updateMultiUI();
   }
 
-  reset() {
-    if (this.selectElement) {
-      this.selectElement.selectedIndex = 0;
-      this.selectedValue$.next(null);
-      this.selectedData$.next(null);
+  reset(emitEvent = false) {
+    this.selectedText.textContent = this.placeholder;
+    this.selectedText.classList.add('text-gray-400');
+
+    this.clearBtn.classList.add('hidden');
+
+    // 🔥 limpiar multi
+    this.selectedValues.clear();
+    this.selectedItems.clear();
+
+    // limpiar UI
+    const items = this.optionsContainer.querySelectorAll('li');
+    items.forEach(li => {
+      li.classList.remove('bg-[#1A2340]', 'text-white');
+      const checkbox = li.querySelector('input');
+      if (checkbox) checkbox.checked = false;
+    });
+
+    this.selectedValue$.next(null);
+    this.selectedData$.next(null);
+
+    if (emitEvent) {
+      this.emit('select-change', {
+        value: null,
+        data: null,
+        displayText: this.placeholder
+      });
     }
+
+    this.selectedText.classList.remove('flex', 'gap-1', 'flex-wrap');
   }
 
   setDisabled(disabled) {
-    if (this.selectElement) {
-      this.selectElement.disabled = disabled;
-    }
+    this.trigger.disabled = disabled;
+    this.trigger.classList.toggle('opacity-50', disabled);
   }
+
+updateMultiUI() {
+  const values = Array.from(this.selectedValues);
+  const data = Array.from(this.selectedItems.values());
+
+  if (values.length === 0) {
+    this.reset(true);
+    return;
+  }
+
+  this.selectedText.innerHTML = ''; // 🔥 limpiar contenido
+
+  data.forEach(item => {
+    let text = item[this.displayProp] || '';
+
+    // 🔥 truncar a 15 chars
+    if (text.length > 15) {
+      text = text.substring(0, 15) + '...';
+    }
+
+    // 🔥 crear tag
+    const tag = document.createElement('span');
+    tag.className = `
+      px-2 py-1 text-xs rounded-md 
+      bg-blue-500/20 text-blue-400 
+      whitespace-nowrap
+    `;
+    tag.textContent = text;
+
+    this.selectedText.appendChild(tag);
+  });
+
+  // 🔥 estilos contenedor
+  this.selectedText.classList.remove('text-gray-400');
+  this.selectedText.classList.add('flex', 'gap-1', 'flex-wrap');
+
+  this.clearBtn.classList.remove('hidden');
+
+  // 🔥 Reactivo
+  this.selectedValue$.next(values);
+  this.selectedData$.next(data);
+
+  this.emit('select-change', {
+    value: values,
+    data,
+    displayText: data.map(d => d[this.displayProp]).join(', ')
+  });
+}
 }
 
 customElements.define('select-component', SelectComponent);

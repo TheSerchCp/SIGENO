@@ -1,7 +1,52 @@
 <template id="select-template">
-  <div class="select-wrapper">
-    <select class="w-full px-4 py-3 border border-[#303556] rounded-md focus:outline-hidden focus:border-2 focus:border-blue-500 placeholder:text-[#303556] text-gray-500 dark:text-[#303556] bg-white dark:bg-[#101532] transition-all">
-      <!-- Las opciones se renderizarán dinámicamente -->
-    </select>
+  <div class="w-full">
+    
+    <!-- Label -->
+    <label id="label" class="block text-sm font-semibold text-gray-400 mb-2"></label>
+
+    <div class="relative">
+      
+      <!-- Trigger -->
+      <button id="trigger"
+        class="appareance-none w-full flex items-center justify-between px-4 py-3 rounded-md
+        bg-white dark:bg-[#101532] border border-[#303556] placeholder:text-[#303556] text-gray-500 dark:text-white
+        hover:border-blue-500 focus:border-blue-500 
+        transition-all duration-200">
+
+     <!-- LEFT SIDE -->
+        <div class="flex items-center gap-2">
+
+          <!-- 🔥 BOTÓN CLEAR -->
+          <span id="clear-btn"
+            class="hidden w-5 h-5 flex items-center justify-center rounded-full 
+            bg-[#1A2340] hover:bg-red-500/20 text-gray-400 hover:text-red-400 
+            transition-all text-xs cursor-pointer"
+            title="Limpiar selección">
+            
+            ✕
+          </span>
+
+          <!-- TEXTO -->
+          <span id="selected-text" class="text-sm text-gray-400">
+            Selecciona una opción
+          </span>
+
+        </div>
+
+        <svg id="arrow" class="w-4 h-4 text-gray-400 transition-transform duration-200"
+          viewBox="0 0 20 20" fill="currentColor">
+          <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+        </svg>
+      </button>
+
+      <!-- Dropdown -->
+      <div id="dropdown"
+        class="absolute z-50 mt-2 w-full rounded-md bg-[#0B1230] 
+        border border-[#1F2A4A] shadow-xl hidden overflow-hidden">
+
+        <ul id="options-container" class="py-2 text-sm text-gray-300"></ul>
+      </div>
+
+    </div>
   </div>
 </template>
