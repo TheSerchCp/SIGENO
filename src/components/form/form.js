@@ -1,4 +1,4 @@
-import { BaseComponent } from "../../../src/services/general/BaseComponent";
+import { BaseComponent } from "../../../src/services/general/BaseComponent.js";
 
 export class FormComponent extends BaseComponent {
   constructor() {
