@@ -1,4 +1,4 @@
-import { BaseComponent } from "../../../services/general/BaseComponent";
+import { BaseComponent } from "../../../services/general/BaseComponent.js";
 import '/src/views/private/sharedComponents.js';
 
 class HomeComponent extends BaseComponent{
