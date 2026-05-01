@@ -1,8 +1,6 @@
 {
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/src/.*", "dest": "/src/index.html", "status": 404 },
-    { "src": "/assets/.*", "dest": "/assets/index.html", "status": 404 },
-    { "src": "/.*", "dest": "/index.html" }
+    { "src": "^/(?!src/|assets/).+$", "dest": "/index.html" }
   ]
 }
