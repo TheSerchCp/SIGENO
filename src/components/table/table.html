@@ -1,13 +1,17 @@
 <template id="table-template">
   <div class="table-wrapper w-full">
-    <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-      <table class="w-full border-collapse bg-white dark:bg-gray-900">
+    <div class="overflow-x-auto  border-t border-x border-gray-200 dark:border-[#181F3D]">
+      <table class="w-full  bg-white dark:bg-[#0A102F] p-4 rounded-tl-md rounded-tr-md ">
         <thead>
           <tr></tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
-    <div class="pagination-container flex items-center justify-center gap-2 mt-4"></div>
+      <table class="w-full p-4">
+    <div class="pagination-footer bg-white dark:bg-[#0A102F]  border-b border-x border-[#181F3D] flex items-center justify-between py-2 px-4">
+      <div id="filter-info-container" class="text-sm  text-gray-600 dark:text-gray-400"></div>
+      <div class="pagination-container flex items-center gap-2"></div>
+    </div>
   </div>
 </template>

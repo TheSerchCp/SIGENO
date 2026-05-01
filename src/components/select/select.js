@@ -108,6 +108,8 @@ export class SelectComponent extends BaseComponent {
 
   toggleOption(index, data, value, text, li) {
   const checkbox = li.querySelector('input');
+  const icon = li.querySelector('.check-icon');
+  if(!checkbox) return;
 
   const isSelected = this.selectedValues.has(value);
 
@@ -115,11 +117,13 @@ export class SelectComponent extends BaseComponent {
     this.selectedValues.delete(value);
     this.selectedItems.delete(index);
     li.classList.remove('bg-[#1A2340]', 'text-white');
+    icon.classList.add('opacity-0');
     checkbox.checked = false;
   } else {
     this.selectedValues.add(value);
     this.selectedItems.set(index, data);
     li.classList.add('bg-[#1A2340]', 'text-white');
+    icon.classList.remove('opacity-0');
     checkbox.checked = true;
   }
 
@@ -181,15 +185,46 @@ createOptionItem({ text, value, index, data }) {
 
   // 🔥 CONTENIDO
   if (this.isMultiple) {
-    li.innerHTML = `
-      <div class="flex items-center gap-2">
-        <input type="checkbox" class="accent-blue-500 pointer-events-none">
-        <span>${text}</span>
-      </div>
-    `;
+li.innerHTML = `
+  <div class="flex items-center gap-2">
+    
+    <div class="relative flex items-center">
+      
+      <input type="checkbox"
+        class="peer h-5 w-5 appearance-none rounded-md border border-slate-300 
+               checked:bg-blue-500 checked:border-[#7895ff] 
+               pointer-events-none">
+
+      <span class="check-icon absolute inset-0 flex items-center justify-center 
+             text-white opacity-0">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="h-3.5 w-3.5"
+             viewBox="0 0 20 20"
+             fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            clip-rule="evenodd"/>
+        </svg>
+      </span>
+
+    </div>
+
+    <span>${text}</span>
+  </div>
+`;
   } else {
     li.textContent = text;
   }
+
+  const checkbox = li.querySelector('input');
+
+if (this.selectedValues.has(value)) {
+  checkbox.checked = true;
+  li.classList.add('bg-[#1A2340]', 'text-white');
+
+  const icon = li.querySelector('.check-icon');
+  icon.classList.remove('opacity-0');
+}
 
   li.addEventListener('click', () => {
     if (this.isMultiple) {
@@ -302,6 +337,8 @@ selectOption(index, data, value, text) {
     items.forEach(li => {
       li.classList.remove('bg-[#1A2340]', 'text-white');
       const checkbox = li.querySelector('input');
+      const icon = li.querySelector('.check-icon');
+      if (icon) icon.classList.add('opacity-0');
       if (checkbox) checkbox.checked = false;
     });
 

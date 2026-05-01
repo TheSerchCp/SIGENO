@@ -74,6 +74,7 @@ export class TableComponent extends BaseComponent {
   cacheDom() {
     this.tbody = this.querySelector('tbody');
     this.paginationContainer = this.querySelector('.pagination-container');
+    this.filterInfoContainer = this.querySelector('#filter-info-container');
     this.thead = this.querySelector('thead tr');
   }
 
@@ -155,7 +156,7 @@ export class TableComponent extends BaseComponent {
     
     this.columns.forEach(column => {
       const th = document.createElement('th');
-      th.className = 'px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700';
+      th.className = 'px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider bg-[#0A102F] p-4 rounded-md border-b-1 border-[#181F3D]';
       if (column.width) {
         th.style.width = column.width;
       }
@@ -189,7 +190,7 @@ export class TableComponent extends BaseComponent {
 
     pageData.forEach(row => {
       const tr = document.createElement('tr');
-      tr.className = 'border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors';
+      tr.className = 'border-b border-gray-200 dark:border-[#181F3D] hover:bg-gray-50/40 dark:hover:bg-gray-800/50 transition-colors';
       
       this.columns.forEach(column => {
         const td = document.createElement('td');
@@ -217,29 +218,101 @@ export class TableComponent extends BaseComponent {
     if (!this.paginationContainer) return;
     
     const totalPages = Math.ceil(this.filteredData.length / this.pageSize);
+    const startIndex = (this.currentPage - 1) * this.pageSize + 1;
+    const endIndex = Math.min(this.currentPage * this.pageSize, this.filteredData.length);
     
     this.paginationContainer.innerHTML = '';
 
-    if (totalPages <= 1) return;
+    if (totalPages <= 1) {
+      if (this.filterInfoContainer) {
+        this.filterInfoContainer.textContent = `Mostrando ${this.filteredData.length} de ${this.filteredData.length} registros`;
+      }
+      return;
+    }
 
-    const prevBtn = document.createElement('button');
-    prevBtn.className = 'px-3 py-2 mx-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors';
-    prevBtn.textContent = '← Anterior';
-    prevBtn.disabled = this.currentPage === 1;
-    prevBtn.addEventListener('click', () => this.goToPage(this.currentPage - 1));
+    // Actualizar información de filtrado en la izquierda
+    if (this.filterInfoContainer) {
+      this.filterInfoContainer.textContent = `Mostrando ${startIndex} a ${endIndex} de ${this.filteredData.length} registros`;
+    }
+
+    // Botón Anterior (flecha)
+    const prevBtn = this.createPaginationButton('←', this.currentPage === 1);
+    prevBtn.addEventListener('click', () => {
+      if (this.currentPage > 1) this.goToPage(this.currentPage - 1);
+    });
     this.paginationContainer.appendChild(prevBtn);
 
-    const info = document.createElement('span');
-    info.className = 'mx-2 text-gray-700 dark:text-gray-300 text-sm';
-    info.textContent = `Página ${this.currentPage} de ${totalPages}`;
-    this.paginationContainer.appendChild(info);
+    // Generar botones de página
+    const pageButtons = this.generatePageButtons(totalPages);
+    pageButtons.forEach(btn => {
+      this.paginationContainer.appendChild(btn);
+    });
 
-    const nextBtn = document.createElement('button');
-    nextBtn.className = 'px-3 py-2 mx-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors';
-    nextBtn.textContent = 'Siguiente →';
-    nextBtn.disabled = this.currentPage === totalPages;
-    nextBtn.addEventListener('click', () => this.goToPage(this.currentPage + 1));
+    // Botón Siguiente (flecha)
+    const nextBtn = this.createPaginationButton('→', this.currentPage === totalPages);
+    nextBtn.addEventListener('click', () => {
+      if (this.currentPage < totalPages) this.goToPage(this.currentPage + 1);
+    });
     this.paginationContainer.appendChild(nextBtn);
+  }
+
+  /**
+   * Crea un botón de paginación con estilos
+   */
+  createPaginationButton(text, isDisabled, isActive = false) {
+    const btn = document.createElement('button');
+    
+    const baseClasses = 'px-2 py-1 border border-[#181F3D] rounded-md transition-colors';
+    const activeClasses = isActive ? 'bg-[#1C42D9] text-white' : 'bg-transparent text-gray-400 hover:text-white';
+    const disabledClasses = isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
+    
+    btn.className = `${baseClasses} ${activeClasses} ${disabledClasses}`;
+    btn.textContent = text;
+    btn.disabled = isDisabled;
+    
+    return btn;
+  }
+
+  /**
+   * Genera los botones de páginas con lógica de ellipsis
+   */
+  generatePageButtons(totalPages) {
+    const buttons = [];
+    let pagesToShow = [];
+
+    if (totalPages <= 5) {
+      // Mostrar todas las páginas si hay 5 o menos
+      for (let i = 1; i <= totalPages; i++) {
+        pagesToShow.push(i);
+      }
+    } else {
+      // Mostrar 3 números + ellipsis + última página
+      if (this.currentPage <= 3) {
+        // Inicio: [1][2][3]...[N]
+        pagesToShow = [1, 2, 3, '...', totalPages];
+      } else if (this.currentPage >= totalPages - 2) {
+        // Fin: [1]...[N-2][N-1][N]
+        pagesToShow = [1, '...', totalPages - 2, totalPages - 1, totalPages];
+      } else {
+        // Medio: [1]...[current-1][current][current+1]...[N]
+        pagesToShow = [1, '...', this.currentPage - 1, this.currentPage, this.currentPage + 1, '...', totalPages];
+      }
+    }
+
+    pagesToShow.forEach(page => {
+      if (page === '...') {
+        const ellipsis = document.createElement('span');
+        ellipsis.className = 'px-2 py-2 text-gray-400';
+        ellipsis.textContent = '...';
+        buttons.push(ellipsis);
+      } else {
+        const btn = this.createPaginationButton(String(page), false, page === this.currentPage);
+        btn.addEventListener('click', () => this.goToPage(page));
+        buttons.push(btn);
+      }
+    });
+
+    return buttons;
   }
 
   /**
@@ -251,8 +324,7 @@ export class TableComponent extends BaseComponent {
     if (pageNumber < 1 || pageNumber > totalPages) return;
     
     this.currentPage = pageNumber;
-    this.renderRows();
-    this.renderPagination();
+    this.render();
     
     this.emit('page-change', { page: this.currentPage, totalPages });
   }

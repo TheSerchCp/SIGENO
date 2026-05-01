@@ -13,6 +13,28 @@ class UsersComponent extends BaseComponent {
       { id: 6, nombre: 'Laura Sánchez', email: 'laura.sanchez@example.com', rol: 'editor', estado: 'activo' },
       { id: 7, nombre: 'David Torres', email: 'david.torres@example.com', rol: 'usuario', estado: 'inactivo' },
       { id: 8, nombre: 'Emma Pérez', email: 'emma.perez@example.com', rol: 'usuario', estado: 'activo' },
+      { id: 9, nombre: 'Sergio Cortés', email: 'sergio.cortes@example.com', rol: 'admin', estado: 'activo' },
+      { id: 10, nombre: 'Valentina Silva', email: 'valentina.silva@example.com', rol: 'usuario', estado: 'activo' },
+      { id: 11, nombre: 'Roberto Díaz', email: 'roberto.diaz@example.com', rol: 'editor', estado: 'activo' },
+      { id: 12, nombre: 'Isabel Flores', email: 'isabel.flores@example.com', rol: 'usuario', estado: 'inactivo' },
+      { id: 13, nombre: 'Francisco Morales', email: 'francisco.morales@example.com', rol: 'admin', estado: 'activo' },
+      { id: 14, nombre: 'Catalina Vargas', email: 'catalina.vargas@example.com', rol: 'usuario', estado: 'activo' },
+      { id: 15, nombre: 'Andrés Reyes', email: 'andres.reyes@example.com', rol: 'editor', estado: 'activo' },
+      { id: 16, nombre: 'Sofía Mendez', email: 'sofia.mendez@example.com', rol: 'usuario', estado: 'activo' },
+      { id: 17, nombre: 'Miguel Ortiz', email: 'miguel.ortiz@example.com', rol: 'usuario', estado: 'inactivo' },
+      { id: 18, nombre: 'Alejandra Romero', email: 'alejandra.romero@example.com', rol: 'admin', estado: 'activo' },
+      { id: 19, nombre: 'Javier Herrera', email: 'javier.herrera@example.com', rol: 'editor', estado: 'activo' },
+      { id: 20, nombre: 'Beatriz Castro', email: 'beatriz.castro@example.com', rol: 'usuario', estado: 'activo' },
+      { id: 21, nombre: 'Manuel Gutierrez', email: 'manuel.gutierrez@example.com', rol: 'usuario', estado: 'activo' },
+      { id: 22, nombre: 'Verónica Salazar', email: 'veronica.salazar@example.com', rol: 'admin', estado: 'inactivo' },
+      { id: 23, nombre: 'Óscar Fuentes', email: 'oscar.fuentes@example.com', rol: 'editor', estado: 'activo' },
+      { id: 24, nombre: 'Mariana Vega', email: 'mariana.vega@example.com', rol: 'usuario', estado: 'activo' },
+      { id: 25, nombre: 'Gustavo Dominguez', email: 'gustavo.dominguez@example.com', rol: 'usuario', estado: 'activo' },
+      { id: 26, nombre: 'Rosa Medina', email: 'rosa.medina@example.com', rol: 'admin', estado: 'activo' },
+      { id: 27, nombre: 'Fernando Ibáñez', email: 'fernando.ibanez@example.com', rol: 'editor', estado: 'activo' },
+      { id: 28, nombre: 'Cristina Nuñez', email: 'cristina.nunez@example.com', rol: 'usuario', estado: 'inactivo' },
+      { id: 29, nombre: 'Esteban Molina', email: 'esteban.molina@example.com', rol: 'usuario', estado: 'activo' },
+      { id: 30, nombre: 'Lorena Aguirre', email: 'lorena.aguirre@example.com', rol: 'admin', estado: 'activo' },
     ];
 
     this.roles = [
@@ -129,26 +151,23 @@ class UsersComponent extends BaseComponent {
         }
       ],
       data: this.users,
-      pageSize: 5,
+      pageSize: 10,
       role: 'usuario',
       rowValidator: () => true
     });
   }
 
   updateFilterInfo(table, searchTerm) {
-    const filterInfo = this.querySelector('#filterInfo');
+    const filterInfoContainer = table.querySelector('#filter-info-container');
     const totalRows = table.getTotalRows();
-    const totalPages = table.getTotalPages();
+    const startIndex = (table.currentPage - 1) * table.pageSize + 1;
+    const endIndex = Math.min(table.currentPage * table.pageSize, totalRows);
     
-    let info = `Mostrando ${totalRows} usuario${totalRows !== 1 ? 's' : ''}`;
-    if (searchTerm) {
-      info += ` (búsqueda: "${searchTerm}")`;
-    }
-    if (totalPages > 1) {
-      info += ` en ${totalPages} página${totalPages !== 1 ? 's' : ''}`;
-    }
+    let info = `Mostrando ${startIndex} a ${endIndex} de ${totalRows} usuario${totalRows !== 1 ? 's' : ''}`;
     
-    filterInfo.textContent = info;
+    if (filterInfoContainer) {
+      filterInfoContainer.textContent = info;
+    }
   }
 }
 
